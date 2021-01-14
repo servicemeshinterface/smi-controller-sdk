@@ -11,15 +11,26 @@ import (
 
 // API defines an object containing functions that the
 // specific service meshes must implement to use this controller
-type API struct {
+type api struct {
 	v1alpha2 V1Alpha2
 }
 
-func (a *API) RegisterV1Alpha2(i V1Alpha2) {
+var apiInstance *api
+
+// Returns a sinlgeton instance of the API
+func API() *api {
+	if apiInstance == nil {
+		apiInstance = &api{}
+	}
+
+	return apiInstance
+}
+
+func (a *api) RegisterV1Alpha2(i V1Alpha2) {
 	a.v1alpha2 = i
 }
 
-func (a *API) V1Alpha2() V1Alpha2 {
+func (a *api) V1Alpha2() V1Alpha2 {
 	return a.v1alpha2
 }
 

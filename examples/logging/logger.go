@@ -1,4 +1,4 @@
-package mesh
+package main
 
 import (
 	"context"
@@ -10,17 +10,6 @@ import (
 )
 
 type loggerV2 struct {
-}
-
-func NewLogger() *API {
-	a := &API{}
-	a.RegisterV1Alpha2(newLoggerV1Alpha2())
-
-	return a
-}
-
-func newLoggerV1Alpha2() *loggerV2 {
-	return &loggerV2{}
 }
 
 func (l *loggerV2) UpsertTrafficTarget(ctx context.Context, c client.Client, log logr.Logger, tt *accessv1alpha2.TrafficTarget) (ctrl.Result, error) {

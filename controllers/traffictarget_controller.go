@@ -20,19 +20,13 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
+	"github.com/nicholasjackson/smi-controller/mesh"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/nicholasjackson/smi-controller/mesh"
 	accessv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha2"
 )
-
-var api *mesh.API
-
-func init() {
-	api = mesh.NewLogger()
-}
 
 // TrafficTargetReconciler reconciles a TrafficTarget object
 type TrafficTargetReconciler struct {
@@ -74,7 +68,7 @@ func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		// The object is being deleted
 		if containsString(tt.ObjectMeta.Finalizers, ttFinalizerName) {
 			// our finalizer is present, so lets handle any external dependency
-			api.V1Alpha2().DeleteTrafficTarget(ctx, r, r.Log, tt)
+			mesh.API().V1Alpha2().DeleteTrafficTarget(ctx, r, r.Log, tt)
 
 			// remove our finalizer from the list and update it.
 			tt.ObjectMeta.Finalizers = removeString(tt.ObjectMeta.Finalizers, ttFinalizerName)
@@ -87,7 +81,7 @@ func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		return ctrl.Result{}, nil
 	}
 
-	return api.V1Alpha2().UpsertTrafficTarget(ctx, r, r.Log, tt)
+	return mesh.API().V1Alpha2().UpsertTrafficTarget(ctx, r, r.Log, tt)
 }
 
 func (r *TrafficTargetReconciler) SetupWithManager(mgr ctrl.Manager) error {
