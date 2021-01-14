@@ -1,4 +1,4 @@
-package pkg
+package controller
 
 import (
 	"flag"
@@ -28,7 +28,7 @@ func init() {
 
 type SMIController struct{}
 
-func (s *SMIController) Start() {
+func Start() {
 	var metricsAddr string
 	var enableLeaderElection bool
 	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")

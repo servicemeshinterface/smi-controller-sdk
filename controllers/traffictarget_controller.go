@@ -20,7 +20,7 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
-	"github.com/nicholasjackson/smi-controller/mesh"
+	"github.com/nicholasjackson/smi-controller/sdk"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -44,7 +44,7 @@ func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 
 	tt := &accessv1alpha2.TrafficTarget{}
 	if err := r.Get(ctx, req.NamespacedName, tt); err != nil {
-		r.Log.Error(err, "unable to fetch TrafficTarget")
+		r.Log.Info("unable to fetch TrafficTarget, most likely deleted")
 		// we'll ignore not-found errors, since they can't be fixed by an immediate
 		// requeue (we'll need to wait for a new notification), and we can get them
 		// on deleted requests.
@@ -68,7 +68,7 @@ func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		// The object is being deleted
 		if containsString(tt.ObjectMeta.Finalizers, ttFinalizerName) {
 			// our finalizer is present, so lets handle any external dependency
-			mesh.API().V1Alpha2().DeleteTrafficTarget(ctx, r, r.Log, tt)
+			sdk.API().V1Alpha2().DeleteTrafficTarget(ctx, r, r.Log, tt)
 
 			// remove our finalizer from the list and update it.
 			tt.ObjectMeta.Finalizers = removeString(tt.ObjectMeta.Finalizers, ttFinalizerName)
@@ -81,7 +81,7 @@ func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		return ctrl.Result{}, nil
 	}
 
-	return mesh.API().V1Alpha2().UpsertTrafficTarget(ctx, r, r.Log, tt)
+	return sdk.API().V1Alpha2().UpsertTrafficTarget(ctx, r, r.Log, tt)
 }
 
 func (r *TrafficTargetReconciler) SetupWithManager(mgr ctrl.Manager) error {

@@ -13,6 +13,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/servicemeshinterface/smi-sdk-go v0.4.1
+	github.com/stretchr/testify v1.4.0
 	k8s.io/apimachinery v0.18.0
 	k8s.io/client-go v0.18.0
 	sigs.k8s.io/controller-runtime v0.5.0
