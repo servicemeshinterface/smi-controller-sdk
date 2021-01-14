@@ -1,0 +1,7 @@
+domain: smi-spec.io
+repo: github.com/nicholasjackson/smi-controller
+resources:
+- group: access
+  kind: TrafficTarget
+  version: v1alpha2
+version: "2"
