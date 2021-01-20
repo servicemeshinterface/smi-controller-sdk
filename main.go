@@ -26,8 +26,10 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	"github.com/nicholasjackson/smi-controller/controllers"
+	accessv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha1"
 	accessv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha2"
+
+	"github.com/nicholasjackson/smi-controller/controllers"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -39,6 +41,7 @@ var (
 func init() {
 	_ = clientgoscheme.AddToScheme(scheme)
 
+	_ = accessv1alpha1.AddToScheme(scheme)
 	_ = accessv1alpha2.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
@@ -73,6 +76,13 @@ func main() {
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "TrafficTarget")
 		os.Exit(1)
+	}
+
+	if os.Getenv("ENABLE_WEBHOOKS") != "false" {
+		if err = (&accessv1alpha1.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficTarget")
+			os.Exit(1)
+		}
 	}
 	// +kubebuilder:scaffold:builder
 

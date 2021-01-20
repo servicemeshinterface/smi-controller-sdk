@@ -68,7 +68,7 @@ func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		// The object is being deleted
 		if containsString(tt.ObjectMeta.Finalizers, ttFinalizerName) {
 			// our finalizer is present, so lets handle any external dependency
-			sdk.API().V1Alpha2().DeleteTrafficTarget(ctx, r, r.Log, tt)
+			sdk.API().V1Alpha2().DeleteTrafficTarget(ctx, r.Client, r.Log, tt)
 
 			// remove our finalizer from the list and update it.
 			tt.ObjectMeta.Finalizers = removeString(tt.ObjectMeta.Finalizers, ttFinalizerName)
@@ -81,7 +81,7 @@ func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		return ctrl.Result{}, nil
 	}
 
-	return sdk.API().V1Alpha2().UpsertTrafficTarget(ctx, r, r.Log, tt)
+	return sdk.API().V1Alpha2().UpsertTrafficTarget(ctx, r.Client, r.Log, tt)
 }
 
 func (r *TrafficTargetReconciler) SetupWithManager(mgr ctrl.Manager) error {
