@@ -18,3 +18,4 @@ kubectl get secrets local-webhook-certs -n shipyard -o json | jq -r '.data."key.
 # Add the CRDs
 # Setup the webhook config
 cat ../crds/access.yaml | ./patch_webhook_yaml.sh | kubectl apply -f -
+cat ../crds/split.yaml | ./patch_webhook_yaml.sh | kubectl apply -f -
