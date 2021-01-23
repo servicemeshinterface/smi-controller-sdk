@@ -6,8 +6,8 @@ require (
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/engine v1.13.1
 	github.com/docker/go-connections v0.4.0 // indirect
-	github.com/go-logr/zapr v0.3.0
 	github.com/go-logr/logr v0.3.0
+	github.com/go-logr/zapr v0.3.0
 	github.com/hashicorp/go-hclog v0.15.0
 	github.com/onsi/ginkgo v1.14.1
 	github.com/onsi/gomega v1.10.2
@@ -20,5 +20,6 @@ require (
 	sigs.k8s.io/controller-runtime v0.6.0
 )
 
-//replace github.com/servicemeshinterface/smi-sdk-go v0.4.1 => ../../servicemeshinterface/smi-sdk-go
-replace github.com/servicemeshinterface/smi-sdk-go v0.4.1 => github.com/nicholasjackson/smi-sdk-go v0.0.0-20210115203718-ba2bc66de8a0
+replace github.com/servicemeshinterface/smi-sdk-go v0.4.1 => ../../servicemeshinterface/smi-sdk-go
+
+//replace github.com/servicemeshinterface/smi-sdk-go v0.4.1 => github.com/nicholasjackson/smi-sdk-go v0.0.0-20210115203718-ba2bc66de8a0

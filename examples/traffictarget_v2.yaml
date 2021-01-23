@@ -2,7 +2,7 @@
 kind: TrafficTarget
 apiVersion: access.smi-spec.io/v1alpha2
 metadata:
-  name: path-specific
+  name: path-specific-v2
   namespace: default
 spec:
   destination:

@@ -4,18 +4,18 @@ import (
 	"testing"
 
 	"github.com/go-logr/logr"
-	accessv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha2"
+	accessv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha1"
 	"github.com/stretchr/testify/mock"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-func setupSDKTests(t *testing.T) (*V1Alpha2Mock, *api, logr.Logger) {
-	v1 := &V1Alpha2Mock{}
+func setupSDKTests(t *testing.T) (*V1AlphaMock, *api, logr.Logger) {
+	v1 := &V1AlphaMock{}
 	v1.On("UpsertTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 	v1.On("DeleteTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 
-	a := &api{&v1Alpha2Impl{}}
-	a.RegisterV1Alpha2(v1)
+	a := &api{&v1AlphaImpl{}}
+	a.RegisterV1Alpha(v1)
 
 	l := ctrl.Log.WithName("controllers").WithName("TrafficTarget")
 
@@ -25,16 +25,16 @@ func setupSDKTests(t *testing.T) (*V1Alpha2Mock, *api, logr.Logger) {
 func TestCallsUserDefinedUpsertTrafficTargetWhenSet(t *testing.T) {
 	v1, a, l := setupSDKTests(t)
 
-	a.V1Alpha2().UpsertTrafficTarget(nil, nil, l, &accessv1alpha2.TrafficTarget{})
+	a.V1Alpha().UpsertTrafficTarget(nil, nil, l, &accessv1alpha1.TrafficTarget{})
 
 	v1.AssertCalled(t, "UpsertTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 }
 
 func TestDoesNotCallsUserDefinedUpsertTrafficTargetWhenNotSet(t *testing.T) {
 	v1, a, l := setupSDKTests(t)
-	a.RegisterV1Alpha2(nil)
+	a.RegisterV1Alpha(nil)
 
-	a.V1Alpha2().UpsertTrafficTarget(nil, nil, l, &accessv1alpha2.TrafficTarget{})
+	a.V1Alpha().UpsertTrafficTarget(nil, nil, l, &accessv1alpha1.TrafficTarget{})
 
 	v1.AssertNotCalled(t, "UpsertTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 }
