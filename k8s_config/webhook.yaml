@@ -29,17 +29,18 @@ metadata:
 webhooks:
 - name: "admission.smi-controller.smi-spec"
   rules:
-  - apiGroups: ["access.smi-spec.io"]
-    apiVersions: ["v1alpha1", "v1alpha2", "v1alpha3"]
+  - apiGroups: ["*"] #["access.smi-spec.io"]
+    apiVersions: ["*"] #["v1alpha1", "v1alpha2", "v1alpha3"]
     operations: ["CREATE", "UPDATE", "DELETE"]
-    resources: ["traffictargets"]
+    resources: ["*"]
     scope: "*"
   clientConfig:
-    service:
-      namespace: ${NAMESPACE}
-      name: ${SERVICE_NAME}
-      path: /conve
-      port: 9443
+    url: https://0.tcp.ngrok.io:16263/convert
+    #service:
+      #namespace: ${NAMESPACE}
+      #name: ${SERVICE_NAME}
+      #path: /convert
+      #port: 9443
     caBundle: ${CA_BUNDLE}
   admissionReviewVersions: ["v1", "v1beta1"]
   sideEffects: None

@@ -83,6 +83,10 @@ func main() {
 			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficTarget")
 			os.Exit(1)
 		}
+		if err = (&accessv1alpha2.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficTarget")
+			os.Exit(1)
+		}
 	}
 	// +kubebuilder:scaffold:builder
 

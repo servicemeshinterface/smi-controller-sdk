@@ -4,6 +4,7 @@ kind: CustomResourceDefinition
 metadata:
   name: traffictargets.access.smi-spec.io
 spec:
+  preserveUnknownFields: false
   group: access.smi-spec.io
   scope: Namespaced
   names:
@@ -12,18 +13,20 @@ spec:
       - tt
     plural: traffictargets
     singular: traffictarget
-  version: v1alpha2
+  version: v1alpha1
   versions:
-    - name: v1alpha2
-      served: true
-      storage: false
     - name: v1alpha1
       served: true
       storage: true
+    - name: v1alpha2
+      served: true
+      storage: false
   validation:
     openAPIV3Schema:
+      type: object
       properties:
         spec:
+          type: object
           required:
             - destination
           properties:
@@ -87,3 +90,13 @@ spec:
                   namespace:
                     description: Namespace of this source.
                     type: string
+  conversion:
+    strategy: Webhook
+    webhookClientConfig:
+      caBundle: ${CA_BUNDLE}
+      #url: https://0.tcp.ngrok.io:16263/convert
+      service:
+        namespace: ${NAMESPACE}
+        name: ${SERVICE_NAME}
+        port: 9443
+        path: /convert
