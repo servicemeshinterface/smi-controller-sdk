@@ -1,4 +1,4 @@
-module github.com/nicholasjackson/smi-controller
+module github.com/nicholasjackson/smi-controller-sdk
 
 go 1.15
 

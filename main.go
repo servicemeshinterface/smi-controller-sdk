@@ -29,7 +29,11 @@ import (
 	accessv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha1"
 	accessv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha2"
 
-	"github.com/nicholasjackson/smi-controller/controllers"
+	splitv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
+	splitv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha2"
+	splitv1alpha3 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha3"
+
+	"github.com/nicholasjackson/smi-controller-sdk/controllers"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -43,6 +47,10 @@ func init() {
 
 	_ = accessv1alpha1.AddToScheme(scheme)
 	_ = accessv1alpha2.AddToScheme(scheme)
+
+	_ = splitv1alpha1.AddToScheme(scheme)
+	_ = splitv1alpha2.AddToScheme(scheme)
+	_ = splitv1alpha3.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
 
@@ -78,6 +86,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err = (&controllers.TrafficSplitReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("TrafficSplit"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "TrafficSplit")
+		os.Exit(1)
+	}
+
 	if os.Getenv("ENABLE_WEBHOOKS") != "false" {
 		if err = (&accessv1alpha1.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficTarget")
@@ -85,6 +102,19 @@ func main() {
 		}
 		if err = (&accessv1alpha2.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficTarget")
+			os.Exit(1)
+		}
+
+		if err = (&splitv1alpha1.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficSplit")
+			os.Exit(1)
+		}
+		if err = (&splitv1alpha2.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficSplit")
+			os.Exit(1)
+		}
+		if err = (&splitv1alpha2.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficSplit")
 			os.Exit(1)
 		}
 	}
