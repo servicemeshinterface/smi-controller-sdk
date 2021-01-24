@@ -26,8 +26,14 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	"github.com/nicholasjackson/smi-controller/controllers"
+	accessv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha1"
 	accessv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha2"
+
+	splitv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
+	splitv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha2"
+	splitv1alpha3 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha3"
+
+	"github.com/nicholasjackson/smi-controller-sdk/controllers"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -39,14 +45,19 @@ var (
 func init() {
 	_ = clientgoscheme.AddToScheme(scheme)
 
+	_ = accessv1alpha1.AddToScheme(scheme)
 	_ = accessv1alpha2.AddToScheme(scheme)
+
+	_ = splitv1alpha1.AddToScheme(scheme)
+	_ = splitv1alpha2.AddToScheme(scheme)
+	_ = splitv1alpha3.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
 
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
-	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
+	flag.StringVar(&metricsAddr, "metrics-addr", ":9102", "The address the metric endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
@@ -73,6 +84,39 @@ func main() {
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "TrafficTarget")
 		os.Exit(1)
+	}
+
+	if err = (&controllers.TrafficSplitReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("TrafficSplit"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "TrafficSplit")
+		os.Exit(1)
+	}
+
+	if os.Getenv("ENABLE_WEBHOOKS") != "false" {
+		if err = (&accessv1alpha1.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficTarget")
+			os.Exit(1)
+		}
+		if err = (&accessv1alpha2.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficTarget")
+			os.Exit(1)
+		}
+
+		if err = (&splitv1alpha1.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficSplit")
+			os.Exit(1)
+		}
+		if err = (&splitv1alpha2.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficSplit")
+			os.Exit(1)
+		}
+		if err = (&splitv1alpha2.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficSplit")
+			os.Exit(1)
+		}
 	}
 	// +kubebuilder:scaffold:builder
 
