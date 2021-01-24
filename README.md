@@ -17,8 +17,7 @@ The other intention behind this SDK is to enable separation between the logic of
 controller and the logic executed upon receiving an event. It should be possible to write a high level
 of unit tests without needing to run the controller and Kubernetes.
 
-## EXAMPLE: Implementing the SDK and creating a controller to handle Upsert and Delete for 
-## access.smi-spec.io/v1alpha1.TrafficTarget resources
+## EXAMPLE: Implementing the SDK and creating a controller to handle Upsert and Delete for access.smi-spec.io/v1alpha1.TrafficTarget resources
 
 To implement the SDK you need to create structs that implement the callback methods you would
 like to receive. The SDK handles the Kubernetes lifecycle of the SMI resources as they are added 
