@@ -1,6 +1,12 @@
 domain: smi-spec.io
-repo: github.com/nicholasjackson/smi-controller
+repo: github.com/nicholasjackson/smi-controller-sdk
 resources:
+- group: split
+  kind: TrafficSplit
+  version: v1alpha1
+- group: access
+  kind: TrafficTarget
+  version: v1alpha3
 - group: access
   kind: TrafficTarget
   version: v1alpha2

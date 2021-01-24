@@ -70,8 +70,8 @@ The full example can be seen below
 package main
 
 import (
-	"github.com/nicholasjackson/smi-controller/sdk"
-	"github.com/nicholasjackson/smi-controller/sdk/controller"
+	"github.com/nicholasjackson/smi-controller-sdk/sdk"
+	"github.com/nicholasjackson/smi-controller-sdk/sdk/controller"
 )
 
 type loggerV2 struct {}
