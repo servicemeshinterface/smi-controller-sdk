@@ -1,0 +1,22 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: controller-webhook-certificate
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  secretName: controller-webhook-certificate
+  dnsNames:
+  - {{ printf "%s.%s.svc" ( include "smi-controller.fullname" . ) .Release.Namespace  | quote }}
+  issuerRef:
+    name: selfsigned
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  selfSigned: {}

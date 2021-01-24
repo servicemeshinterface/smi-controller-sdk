@@ -4,33 +4,33 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
-	accessv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha2"
+	accessv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type loggerV2 struct{}
+type logger struct{}
 
-func (l *loggerV2) UpsertTrafficTarget(
+func (l *logger) UpsertTrafficTarget(
 	ctx context.Context,
 	c client.Client,
 	log logr.Logger,
-	tt *accessv1alpha2.TrafficTarget,
+	tt *accessv1alpha1.TrafficTarget,
 ) (ctrl.Result, error) {
 
-	log.Info("UpsertTrafficTarget", "api", "v1alpha2", "target", tt)
+	log.Info("UpsertTrafficTarget", "api", "v1alpha1", "target", tt)
 
 	return ctrl.Result{}, nil
 }
 
-func (l *loggerV2) DeleteTrafficTarget(
+func (l *logger) DeleteTrafficTarget(
 	ctx context.Context,
 	c client.Client,
 	log logr.Logger,
-	tt *accessv1alpha2.TrafficTarget,
+	tt *accessv1alpha1.TrafficTarget,
 ) (ctrl.Result, error) {
 
-	log.Info("DeleteTrafficTarget", "api", "v1alpha2", "target", tt)
+	log.Info("DeleteTrafficTarget", "api", "v1alpha1", "target", tt)
 
 	return ctrl.Result{}, nil
 }

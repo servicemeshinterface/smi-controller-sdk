@@ -7,7 +7,7 @@ import (
 
 func main() {
 	// register our lifecycle callbacks with the controller
-	sdk.API().RegisterV1Alpha(&loggerV2{})
+	sdk.API().RegisterV1Alpha(&logger{})
 
 	// create and start a the controller
 	controller.Start()
