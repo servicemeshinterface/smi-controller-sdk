@@ -14,6 +14,8 @@ func setupSDKTests(t *testing.T) (*V1AlphaMock, *api, logr.Logger) {
 	v1 := &V1AlphaMock{}
 	v1.On("UpsertTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 	v1.On("DeleteTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
+	v1.On("UpsertTrafficSplit", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
+	v1.On("DeleteTrafficSplit", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 
 	a := &api{&v1AlphaImpl{}}
 	a.RegisterV1Alpha(v1)

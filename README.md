@@ -1,21 +1,30 @@
 # SMI Controller SDK
 
-This project is a scaffold Kubernetes controller for the SMI specification.
-
 Projects that would like to build a SMI Spec compliant controller only needs to 
-define a plugin that implement the extension points defined by the SDK. 
-
-Core Kubernetes controller methods that handle the lifecylcle are implemented by the SDK and 
+define a plugin that implement the extension points defined by the SDK. Core Kubernetes 
+controller methods that handle the lifecylcle are implemented by the SDK and 
 the methods in your API are called accordingly.
 
-## Implementing the SDK and creating a controller to handle Upsert and Delete for 
-## access.smi-spec.io/v1alpha2.TrafficTarget resources
+The intention behind this project is to simplify the process of implementing an SMI controller.
+Base controller setup, conversion webhooks and validation are handled by the SDK, 
+the end user only needs to implement the business  logic for the base level API in the smi spec `v1aplha1`.
+
+Since the conversion webhooks convert other API versions to the base API which is then passed as 
+a value to a function in your implementation. The design intention is to make it a trivial operation to
+handle all SMI versions and to give a simple and easy upgrade path.
+
+The other intention behind this SDK is to enable separation between the logic of writing a Kubernetes 
+controller and the logic executed upon receiving an event. It should be possible to write a high level
+of unit tests without needing to run the controller and Kubernetes.
+
+## EXAMPLE: Implementing the SDK and creating a controller to handle Upsert and Delete for 
+## access.smi-spec.io/v1alpha1.TrafficTarget resources
 
 To implement the SDK you need to create structs that implement the callback methods you would
 like to receive. The SDK handles the Kubernetes lifecycle of the SMI resources as they are added 
 and deleted from the Kubernets cluster saving you the job of writing custom controller code.
 
-You only need to write the custom logic you would like to execute when for example a new TrafficTarget
+You only need to write the custom logic you would like to execute when for example a new `TrafficTarget`
 resource is dded to the cluster. In addition by using the SDK you only need to implement methods you
 are insterested in, not the full API.
 
@@ -23,28 +32,28 @@ For example, to create a simple implemntation which logs when a SMI resource is 
 the system, you create a struct like the following example.
 
 ```go
-type loggerV2 struct {}
+type logger struct {}
 
-func (l *loggerV2) UpsertTrafficTarget(
+func (l *logger) UpsertTrafficTarget(
 	ctx context.Context,
 	c client.Client,
 	log logr.Logger,
-	tt *accessv1alpha2.TrafficTarget,
+	tt *accessv1alpha1.TrafficTarget,
 ) (ctrl.Result, error) {
 
-	log.Info("UpsertTrafficTarget", "api", "v1alpha2", "target", tt)
+	log.Info("UpsertTrafficTarget", "api", "v1alpha", "target", tt)
 
 	return ctrl.Result{}, nil
 }
 
-func (l *loggerV2) DeleteTrafficTarget(
+func (l *logger) DeleteTrafficTarget(
 	ctx context.Context,
 	c client.Client,
 	log logr.Logger,
-	tt *accessv1alpha2.TrafficTarget,
+	tt *accessv1alpha1.TrafficTarget,
 ) (ctrl.Result, error) {
 
-	log.Info("DeleteTrafficTarget", "api", "v1alpha2", "target", tt)
+	log.Info("DeleteTrafficTarget", "api", "v1alpha", "target", tt)
 
 	return ctrl.Result{}, nil
 }
@@ -52,10 +61,10 @@ func (l *loggerV2) DeleteTrafficTarget(
 
 You then register these callbacks with the controller API, when the controller needs to action a change 
 to a SMI Spec resource it calls the apropriate callback. For example, when a new `TrafficTarget` is 
-received by the controller the `loggerV2.UpsertTrafficTarget` method is called.
+received by the controller the `logger.UpsertTrafficTarget` method is called.
 
 ```go
-sdk.API().RegisterV1Alpha2(&loggerV2{})
+sdk.API().RegisterV1Alpha(&logger{})
 ```
 
 Once registered you can start the controller
@@ -74,35 +83,35 @@ import (
 	"github.com/nicholasjackson/smi-controller-sdk/sdk/controller"
 )
 
-type loggerV2 struct {}
+type logger struct {}
 
-func (l *loggerV2) UpsertTrafficTarget(
+func (l *logger) UpsertTrafficTarget(
 	ctx context.Context,
 	c client.Client,
 	log logr.Logger,
-	tt *accessv1alpha2.TrafficTarget,
+	tt *accessv1alpha1.TrafficTarget,
 ) (ctrl.Result, error) {
 
-	log.Info("UpsertTrafficTarget", "api", "v1alpha2", "target", tt)
+	log.Info("UpsertTrafficTarget", "api", "v1alpha", "target", tt)
 
 	return ctrl.Result{}, nil
 }
 
-func (l *loggerV2) DeleteTrafficTarget(
+func (l *logger) DeleteTrafficTarget(
 	ctx context.Context,
 	c client.Client,
 	log logr.Logger,
-	tt *accessv1alpha2.TrafficTarget,
+	tt *accessv1alpha.TrafficTarget,
 ) (ctrl.Result, error) {
 
-	log.Info("DeleteTrafficTarget", "api", "v1alpha2", "target", tt)
+	log.Info("DeleteTrafficTarget", "api", "v1alpha", "target", tt)
 
 	return ctrl.Result{}, nil
 }
 
 func main() {
 	// register our lifecycle callbacks with the controller
-	sdk.API().RegisterV1Alpha2(&loggerV2{})
+	sdk.API().RegisterV1Alpha(&logger{})
 
 	// create and start a the controller
 	controller.Start()
