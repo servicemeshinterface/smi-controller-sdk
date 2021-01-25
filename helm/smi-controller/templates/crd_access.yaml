@@ -168,5 +168,7 @@ spec:
         caBundle: Cg==
         #url: https://0.tcp.ngrok.io:16263/convert
         service:
-          namespace: {{ .Release.Namespace | quote }}
-          name: {{ include "smi-controller.fullname" . }}
+          namespace: {{ default .Release.Namespace .Values.webhook.namespace | quote }}
+          name: {{ default (include "smi-controller.fullname" .) .Values.webhook.service | quote }}
+          port: {{ default 9443 .Values.webhook.port }}
+          path: {{ default "/convert" .Values.webhook.path }}

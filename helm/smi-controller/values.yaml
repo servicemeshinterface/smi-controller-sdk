@@ -13,6 +13,17 @@ image:
 controller:
   enabled: "true"
 
+webhook:
+  # Overrides the default webhook service and namespace
+  service: ""
+  namespace: ""
+  port: ""
+  path: ""
+
+  # Allows adding additional DNS Names to the cert generated
+  # for the webhook
+  additionalDNSNames: []
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

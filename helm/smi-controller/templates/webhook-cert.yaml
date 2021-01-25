@@ -8,6 +8,9 @@ spec:
   secretName: controller-webhook-certificate
   dnsNames:
   - {{ printf "%s.%s.svc" ( include "smi-controller.fullname" . ) .Release.Namespace  | quote }}
+  {{- range $dnsName := .Values.webhook.additionalDNSNames }}
+  - {{ $dnsName | quote }}
+  {{- end }}
   issuerRef:
     name: selfsigned
 
