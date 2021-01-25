@@ -104,7 +104,7 @@ spec:
                         type: string
                       weight:
                         description: Traffic weight value of this backend.
-                        type: string
+                        type: integer
     - name: v1alpha3
       served: true
       storage: false
@@ -148,7 +148,7 @@ spec:
                         type: string
                       weight:
                         description: Traffic weight value of this backend.
-                        type: string
+                        type: integer
   conversion:
     strategy: Webhook
     webhook:
