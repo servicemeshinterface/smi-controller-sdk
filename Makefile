@@ -6,3 +6,8 @@ build_docker:
 
 push_docker:
 	docker push ${DOCKER_REPO}:${DOCKER_VERSION}
+
+update_helm:
+	helm package ./helm/smi-controller
+	mv smi-controller-0.1.0.tgz ./docs/
+	cd ./docs && helm repo index .

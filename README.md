@@ -143,8 +143,35 @@ $ helm repo add jetstack https://charts.jetstack.io
 $ helm install --name my-release --namespace cert-manager jetstack/cert-manager
 ```
 
-You can then install the example using the helm chart
+You can then install the example using the helm chart:
 
 ```shell
-$ helm install smi-controller --namespace smi --debug --create-namespace .
+helm repo add smi-controler https://nicholasjackson.io/smi-controller-sdk/
+
+helm install smi-controller smi-controller/smi-controller
 ```
+
+## Helm Chart - Building
+
+The SMI controller SDK provides a Helm chart for installation. Like the main project aim, the aim of
+the chart is to provide a generic resource that any implementation of the Controller SDK can use.
+It should be possible for any project which leveraging the SDK to use the generic Helm chart to install
+their controller. This like the SDK itself saves maintenance and allows implementors to concentrate
+on writing mesh specific logic.
+
+To build and update the chart the following command can be used:
+
+```shell
+make update_helm
+```
+
+```shell
+helm package ./helm/smi-controller
+Successfully packaged chart and saved it to: /home/nicj/code/src/github.com/nicholasjackson/smi-controller-sdk/smi-controller-0.1.0.tgz
+mv smi-controller-0.1.0.tgz ./docs/
+cd ./docs && helm repo index .
+```
+
+This repository uses GitHub pages to serve a Helm chart repo from the docs folder, commiting 
+the changes created with the previous command to the `main` branch will automatically update the 
+repository and start serving the new chart version.
