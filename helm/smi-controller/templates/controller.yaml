@@ -1,14 +1,15 @@
-{{- if eq (toString .Values.controller.enabled) "true" }}
+---
+{{- if eq (toString .Values.controller.enabled) "true"}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "smi-controller.fullname" . }}
-  namespace: {{ .Release.Namespace | quote }}
+  name: {{include "smi-controller.fullname" .}}
+  namespace: {{.Release.Namespace | quote}}
   labels:
-    {{- include "smi-controller.labels" . | nindent 4 }}
+    {{- include "smi-controller.labels" . | nindent 4}}
 spec:
-  {{- if not .Values.controller.autoscaling.enabled }}
-  replicas: {{ .Values.controller.replicaCount }}
+  {{- if not .Values.controller.autoscaling.enabled}}
+  replicas: {{.Values.controller.replicaCount}}
   {{- end }}
   selector:
     matchLabels:
@@ -50,18 +51,18 @@ spec:
             tcpSocket:
               port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.controller.resources | nindent 12 }}
           env:
             {{- toYaml .Values.controller.env | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.controller.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with .Values.controller.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with .Values.controller.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
