@@ -28,8 +28,7 @@ jobs:
       run: |
         curl https://shipyard.run/install | bash
         shipyard run ./shipyard
-        KUBECONFIG=$(shipyard output KUBECONFIG) make test_functional
-
-    - name: Execute Functional Tests
+    
+    - name: Run Functional Tests
       run: |
-        cd test && go run .
+        make functional_test
