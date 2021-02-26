@@ -8,11 +8,7 @@ Scenario: Standard Blueprint
       | name                | type        |
       | dc1                 | network     |
       | dc1                 | k8s_cluster |
-      | consul              | ingress     |
-      | grafana             | ingress     |  
-      | consul              | helm        |  
-      | grafana             | helm        |
-      | loki                | helm        |
-      | prometheus_stack    | helm        | 
+      | cert-manager        | helm        |
+      | smi-controller      | helm        |
     And a HTTP call to "http://localhost:8500/v1/status/leader" should result in status 200
     And a HTTP call to "http://localhost:8080" should result in status 200

@@ -90,13 +90,3 @@ spec:
                   namespace:
                     description: Namespace of this source.
                     type: string
-  conversion:
-    strategy: Webhook
-    webhookClientConfig:
-      caBundle: ${CA_BUNDLE}
-      #url: https://0.tcp.ngrok.io:16263/convert
-      service:
-        namespace: ${NAMESPACE}
-        name: ${SERVICE_NAME}
-        port: 9443
-        path: /convert

@@ -175,3 +175,98 @@ cd ./docs && helm repo index .
 This repository uses GitHub pages to serve a Helm chart repo from the docs folder, commiting 
 the changes created with the previous command to the `main` branch will automatically update the 
 repository and start serving the new chart version.
+
+## Developing Locally
+
+To create a tests Kubernetes cluster on Docker that you can use when developing the Controller SDK
+you can use the included Shipyard blueprint that will create the cluster and install any 
+pre-requistes.
+
+
+```shell
+➜ shipyard run ./shipyard 
+Running configuration from:  ./shipyard
+
+2021-02-26T17:18:44.822Z [INFO]  Creating Output: ref=KUBECONFIG
+2021-02-26T17:18:44.822Z [INFO]  Creating Network: ref=dc1
+2021-02-26T17:18:44.845Z [INFO]  Creating Cluster: ref=dc1
+2021-02-26T17:19:38.654Z [INFO]  Create Ingress: ref=smi-webhook
+2021-02-26T17:19:38.654Z [INFO]  Applying Kubernetes configuration: ref=cert-manager config=[/home/nicj/go/src/github.com/nicholasjackson/smi-controller-sdk/shipyard/modules/smi-controller/cert-manager.crds.yaml]
+2021-02-26T17:19:38.858Z [INFO]  Creating Helm chart: ref=cert-manager
+2021-02-26T17:19:53.291Z [INFO]  Creating Helm chart: ref=smi-controler
+
+########################################################
+
+Title Consul Service Mesh on Kubernetes with Monitoring
+Author Nic Jackson
+
+shipyard_version: ">= 0.2.1"
+
+1 Service Mesh Interface Controller SDK
+
+....
+```
+
+Shipyard is available for all platforms and can be installed by following the instructions on the 
+Shipyard website: [https://shipyard.run/docs/install](https://shipyard.run/docs/install)
+
+Shipyard exposes the controller and webhooks running on your local machine to the local 
+Kubernetes cluster. 
+
+Shipyard places the Kubernetes config file needed for interacting with the server int `$HOME/.shipyard/config/dc1/kubeconfig.yaml`
+you can use the command `export KUBECONFIG=$(shipyard output KUBECONFIG)` to set this as an environment variable.
+
+Running the command `make run_local` will automatically fetch the TLS certificates needed for the webhook server
+and will start the local code.
+
+```shell
+➜ make run_local
+mkdir -p /tmp/k8s-webhook-server/serving-certs/
+kubectl get secret controller-webhook-certificate -n smi -o json | \
+        jq -r '.data."tls.crt"' | \
+        base64 -d > /tmp/k8s-webhook-server/serving-certs/tls.crt
+kubectl get secret controller-webhook-certificate -n smi -o json | \
+        jq -r '.data."tls.key"' | \
+        base64 -d > /tmp/k8s-webhook-server/serving-certs/tls.key
+go run .
+I0226 17:24:40.411612   23455 request.go:621] Throttling request took 1.0387667s, request: GET:https://127.0.0.1:64207/apis/storage.k8s.io/v1beta1?timeout=32s
+2021-02-26T17:24:40.413Z        INFO    controller-runtime.metrics      metrics server is starting to listen    {"addr": ":9102"}
+```
+
+You can test the setup by applying one of the local configuration files
+
+```shell
+➜ k apply -f ./examples/traffictarget_v2.yaml 
+traffictarget.access.smi-spec.io/path-specific-v2 created
+```
+
+Looking at the logs you will see that the locally running code has handled the webhook conversion and the 
+controller code.
+
+```shell
+21-02-26T17:27:53.139Z        INFO    traffictarget-resource  ConvertTo v1alpha1
+2021-02-26T17:27:53.142Z        INFO    traffictarget-resource  ConvertFrom v1alpha1
+2021-02-26T17:27:53.143Z        INFO    traffictarget-resource  ConvertFrom v1alpha1
+2021-02-26T17:27:53.144Z        INFO    traffictarget-resource  ConvertFrom v1alpha1
+2021-02-26T17:27:53.146Z        INFO    traffictarget-resource  ConvertFrom v1alpha1
+2021-02-26T17:27:53.149Z        INFO    controllers.TrafficTarget       UpsertTrafficTarget     {"api": "v1alpha1", "target": {"kind":"TrafficTarget","apiVersion":"access.smi-spec.io/v1alpha1","metadata":{"name":"path-specific-v2","namespace":"default","selfLink":"/apis/access.smi-spec.io/v1alpha1/namespaces/default/traffictargets/path-specific-v2","uid":"ca023c97-633a-44c4-9d89-cdd54b076ada","resourceVersion":"1305","generation":1,"creationTimestamp":"2021-02-26T17:27:53Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"access.smi-spec.io/v1alpha2\",\"kind\":\"TrafficTarget\",\"metadata\":{\"annotations\":{},\"name\":\"path-specific-v2\",\"namespace\":\"default\"},\"spec\":{\"destination\":{\"kind\":\"ServiceAccount\",\"name\":\"service-a\",\"namespace\":\"default\",\"port\":8080},\"rules\":[{\"kind\":\"HTTPRouteGroup\",\"matches\":[\"metrics\"],\"name\":\"the-routes\"}],\"sources\":[{\"kind\":\"ServiceAccount\",\"name\":\"prometheus\",\"namespace\":\"default\"}]}}\n"},"finalizers":["traffictarget.finalizers.smi-controller"],"managedFields":[{"manager":"kubectl","operation":"Update","apiVersion":"access.smi-spec.io/v1alpha2","time":"2021-02-26T17:27:53Z","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:annotations":{".":{},"f:kubectl.kubernetes.io/last-applied-configuration":{}}},"f:spec":{".":{},"f:destination":{".":{},"f:kind":{},"f:name":{},"f:namespace":{},"f:port":{}},"f:rules":{},"f:sources":{}}}},{"manager":"smi-controller-sdk","operation":"Update","apiVersion":"access.smi-spec.io/v1alpha1","time":"2021-02-26T17:27:53Z","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:finalizers":{".":{},"v:\"traffictarget.finalizers.smi-controller\"":{}}}}}]},"destination":{"kind":"","name":""},"sources":null,"specs":null}}
+2021-02-26T17:27:53.149Z        DEBUG   controller-runtime.controller   Successfully Reconciled {"controller": "traffictarget", "request": "default/path-specific-v2"}
+2021-02-26T17:27:53.149Z        INFO    controllers.TrafficTarget       UpsertTrafficTarget     {"api": "v1alpha1", "target": {"kind":"TrafficTarget","apiVersion":"access.smi-spec.io/v1alpha1","metadata":{"name":"path-specific-v2","namespace":"default","selfLink":"/apis/access.smi-spec.io/v1alpha1/namespaces/default/traffictargets/path-specific-v2","uid":"ca023c97-633a-44c4-9d89-cdd54b076ada","resourceVersion":"1305","generation":1,"creationTimestamp":"2021-02-26T17:27:53Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"access.smi-spec.io/v1alpha2\",\"kind\":\"TrafficTarget\",\"metadata\":{\"annotations\":{},\"name\":\"path-specific-v2\",\"namespace\":\"default\"},\"spec\":{\"destination\":{\"kind\":\"ServiceAccount\",\"name\":\"service-a\",\"namespace\":\"default\",\"port\":8080},\"rules\":[{\"kind\":\"HTTPRouteGroup\",\"matches\":[\"metrics\"],\"name\":\"the-routes\"}],\"sources\":[{\"kind\":\"ServiceAccount\",\"name\":\"prometheus\",\"namespace\":\"default\"}]}}\n"},"finalizers":["traffictarget.finalizers.smi-controller"],"managedFields":[{"manager":"kubectl","operation":"Update","apiVersion":"access.smi-spec.io/v1alpha2","time":"2021-02-26T17:27:53Z","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:annotations":{".":{},"f:kubectl.kubernetes.io/last-applied-configuration":{}}},"f:spec":{".":{},"f:destination":{".":{},"f:kind":{},"f:name":{},"f:namespace":{},"f:port":{}},"f:rules":{},"f:sources":{}}}},{"manager":"smi-controller-sdk","operation":"Update","apiVersion":"access.smi-spec.io/v1alpha1","time":"2021-02-26T17:27:53Z","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:finalizers":{".":{},"v:\"traffictarget.finalizers.smi-controller\"":{}}}}}]},"destination":{"kind":"","name":""},"sources":null,"specs":null}}
+2021-02-26T17:27:53.149Z        DEBUG   controller-runtime.controller   Successfully Reconciled {"controller": "traffictarget", "request": "default/path-specific-v2"}
+2021-02-26T17:27:53.149Z        INFO    traffictarget-resource  ConvertFrom v1alpha1
+```
+
+When Shipyard setup the local environment it created a Kubernetes service `smi-webhook.shipyard.svc` that proxies traffic to your local machine. It also configures the CRDs for the SMI resources to use this service for the conversion and validation webhook.
+Using this feature you can develop 100% locally without needing to deploy the controller to the Kubernetes cluster for testing.
+
+To remove any resources created by Shipyard you can use the command `shipyard destroy`.
+
+```shell
+➜ shipyard destroy 
+2021-02-26T17:34:30.516Z [INFO]  Destroy Ingress: ref=smi-webhook id=d199780b-2066-41da-80d4-4294cc13adcb
+2021-02-26T17:34:30.516Z [INFO]  Destroy Helm chart: ref=smi-controler
+2021-02-26T17:34:30.525Z [INFO]  Destroy Helm chart: ref=cert-manager
+2021-02-26T17:34:30.526Z [INFO]  Destroy Kubernetes configuration: ref=cert-manager config=[/home/nicj/go/src/github.com/nicholasjackson/smi-controller-sdk/shipyard/modules/smi-controller/cert-manager.crds.yaml]
+2021-02-26T17:34:30.687Z [INFO]  Destroy Cluster: ref=dc1
+2021-02-26T17:34:31.215Z [INFO]  Destroy Network: ref=dc1
+```

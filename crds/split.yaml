@@ -15,15 +15,15 @@ spec:
     singular: trafficsplit
   version: v1alpha1
   versions:
-    - name: v1alpha3
-      served: true
-      storage: false
-    - name: v1alpha2
-      served: true
-      storage: false
     - name: v1alpha1
       served: true
       storage: true
+    - name: v1alpha2
+      served: true
+      storage: false
+    - name: v1alpha3
+      served: true
+      storage: false
   additionalPrinterColumns:
   - name: Service
     type: string
@@ -68,14 +68,4 @@ spec:
                     type: string
                   weight:
                     description: Traffic weight value of this backend.
-                    type: number
-  conversion:
-    strategy: Webhook
-    webhookClientConfig:
-      caBundle: ${CA_BUNDLE}
-      #url: https://0.tcp.ngrok.io:16263/convert
-      service:
-        namespace: ${NAMESPACE}
-        name: ${SERVICE_NAME}
-        port: 9443
-        path: /convert
+                    type: string

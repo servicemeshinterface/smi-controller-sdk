@@ -21,5 +21,15 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
+    - name: Unit Test
       run: go test -v ./...
+
+    - name: Setup Functional Tests
+      run: |
+        curl https://shipyard.run/install | bash
+        shipyard run ./shipyard
+        KUBECONFIG=$(shipyard output KUBECONFIG) make test_functional
+
+    - name: Execute Functional Tests
+      run: |
+        cd test && go run .
