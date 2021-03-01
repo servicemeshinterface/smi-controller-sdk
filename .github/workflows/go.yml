@@ -18,12 +18,6 @@ jobs:
       with:
         go-version: 1.15
 
-    - name: Build
-      run: go build -v ./...
-
-    - name: Unit Test
-      run: go test -v ./...
-
     - name: Setup Functional Tests
       run: |
         curl https://shipyard.run/install | bash
@@ -41,6 +35,12 @@ jobs:
         # (you'll need to set the KUBEBUILDER_ASSETS env var if you put it somewhere else)
         mv /tmp/kubebuilder_2.3.1_${os}_${arch} /usr/local/kubebuilder
         export PATH=$PATH:/usr/local/kubebuilder/bin
+    
+    - name: Build
+      run: go build -v ./...
+
+    - name: Unit Test
+      run: go test -v ./...
     
     - name: Run Functional Tests
       run: |
