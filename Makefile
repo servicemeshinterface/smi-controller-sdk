@@ -27,5 +27,4 @@ run_local: fetch_certs
 	go run .
 
 functional_test: fetch_certs
-	export KUBECONFIG=$(shipyard output KUBECONFIG) 
 	cd test && go run .

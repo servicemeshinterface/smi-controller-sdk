@@ -31,4 +31,5 @@ jobs:
     
     - name: Run Functional Tests
       run: |
+        export KUBECONFIG=$(shipyard output KUBECONFIG)
         make functional_test
