@@ -31,7 +31,7 @@ jobs:
         # download kubebuilder and extract it to tmp
         curl -L https://go.kubebuilder.io/dl/2.3.1/${os}/${arch} | tar -xz -C /tmp/
 
-        # add kubebuilder to the path 
+        export KUBEBUILDER_ASSETS=/tmp/kubebuilder_2.3.1_${os}_${arch}/bin
         export PATH=$PATH:/tmp/kubebuilder_2.3.1_${os}_${arch}/bin
     
     - name: Build
