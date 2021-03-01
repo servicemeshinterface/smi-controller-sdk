@@ -270,3 +270,88 @@ To remove any resources created by Shipyard you can use the command `shipyard de
 2021-02-26T17:34:30.687Z [INFO]  Destroy Cluster: ref=dc1
 2021-02-26T17:34:31.215Z [INFO]  Destroy Network: ref=dc1
 ```
+
+### Unit Tests
+
+The SDK has a small suite of unit tests that tests the API responsible for executing the callbacks into the registered logic. For testing controller
+logic Kubebuilder prefers a functional approach, the details of which can be found in the next section.
+
+```shell
+go test ./sdk -v
+```
+
+### Functional Tests
+
+Kubebuilder has a functional test suite written using `Ginko`, the tests are executed against a locally running Kubernetes API and EtcD server.
+
+To run the functional tests in the folder `./controllers` you need to have the `Kubebuilder` installed, instructions for installing `Kubebuilder` can
+be found at the following link: [https://book.kubebuilder.io/quick-start.html#installation](https://book.kubebuilder.io/quick-start.html#installation)
+
+Once you have everything installed, the functional tests for the controller can be run with the following command:
+
+```shell
+go test ./controllers -v
+```
+
+You should see output similar  to the following:
+
+```shell
+=== RUN   TestAPIs
+Running Suite: Controller Suite
+===============================
+Random Seed: 1614600944
+Will run 1 of 1 specs
+
+•E0301 12:15:48.410834   24393 reflector.go:383] pkg/mod/k8s.io/client-go@v0.18.8/tools/cache/reflector.go:125: Failed to watch *v1alpha1.TrafficTarget: Get "http://127.0.0.1:43373/apis/access.smi-spec.io/v1alpha1/traffictargets?allowWatchBookmarks=true&resourceVersion=56&timeoutSeconds=431&watch=true": dial tcp 127.0.0.1:43373: connect: connection refused
+E0301 12:15:48.413634   24393 reflector.go:383] pkg/mod/k8s.io/client-go@v0.18.8/tools/cache/reflector.go:125: Failed to watch *v1alpha1.TrafficSplit: Get "http://127.0.0.1:43373/apis/split.smi-spec.io/v1alpha1/trafficsplits?allowWatchBookmarks=true&resourceVersion=55&timeoutSeconds=427&watch=true": dial tcp 127.0.0.1:43373: connect: connection refused
+
+
+Ran 1 of 1 Specs in 3.739 seconds
+SUCCESS! -- 1 Passed | 0 Failed | 0 Pending | 0 Skipped
+--- PASS: TestAPIs (3.74s)
+PASS
+ok      github.com/nicholasjackson/smi-controller-sdk/controllers       3.753s
+```
+
+### End To End Tests
+The final layer of tests are the End To End tests, these tests start the controller and connect it to a Kubernetes instance.
+These test do not comprehensively test the logic of the controller but are instead designed to test the wiring of all the components.
+
+To execute the functional tests first create a test environment using Shipyard:
+
+```shell
+shipyard run ./shipyard
+```
+
+You can then run the functional tests:
+
+```shell
+make functional_test 
+```
+
+The certificates for webhook server will be retrieved from the Kubernetes cluster before starting the server and running the tests.
+
+```shell
+mkdir -p /tmp/k8s-webhook-server/serving-certs/
+kubectl get secret controller-webhook-certificate -n smi -o json | \
+        jq -r '.data."tls.crt"' | \
+        base64 -d > /tmp/k8s-webhook-server/serving-certs/tls.crt
+kubectl get secret controller-webhook-certificate -n smi -o json | \
+        jq -r '.data."tls.key"' | \
+        base64 -d > /tmp/k8s-webhook-server/serving-certs/tls.key
+cd test && go run .
+Feature: TrafficSplitter
+  In order to test the TrafficTarget
+  As a developer
+  I need to ensure the specification is accepted by the server
+I0301 12:55:10.833118   26939 request.go:621] Throttling request took 1.0377349s, request: GET:https://127.0.0.1:64239/apis/autoscaling/v2beta2?timeout=32s
+
+  Scenario: Apply TrafficTarget                               # features/split.feature:6
+    Given the server is running                               # main.go:81 -> main.theServerIsRunning
+    When I create a TrafficSplitter                           # main.go:112 -> main.iCreateATrafficSplitter
+    Then I expect the controller to have received the details # main.go:141 -> main.iExpectTheControllerToHaveRecievedTheDetails
+
+1 scenarios (1 passed)
+3 steps (3 passed)
+4.0091541s
+```
