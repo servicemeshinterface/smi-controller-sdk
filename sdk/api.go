@@ -8,7 +8,7 @@ type api struct {
 
 var apiInstance *api
 
-// Returns a sinlgeton instance of the API
+// API returns a singleton instance of the API
 func API() *api {
 	if apiInstance == nil {
 		apiInstance = &api{

@@ -23,6 +23,16 @@
       "env":{
         "KUBECONFIG": "${env:HOME}/.shipyard/config/dc1/kubeconfig.yaml"
       }
+    },
+    {
+      "name": "Debug controller",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/main.go",
+      "env":{
+        "KUBECONFIG": "${env:HOME}/.shipyard/config/dc1/kubeconfig.yaml"
+      }
     }
   ]
 }
