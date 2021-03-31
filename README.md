@@ -1,27 +1,27 @@
 # SMI Controller SDK
 
-Projects that would like to build a SMI Spec compliant controller only needs to 
-define a plugin that implement the extension points defined by the SDK. Core Kubernetes 
-controller methods that handle the lifecylcle are implemented by the SDK and 
-the methods in your API are called accordingly.
+Projects that would like to build an SMI Spec compliant controller (which observes and acts on SMI
+resources) only need to define a plugin that implements the extension points defined by this SDK.
+Core Kubernetes controller methods that handle the lifecylcle are implemented by this SDK and the
+methods in the implemetation's API are called accordingly.
 
 The intention behind this project is to simplify the process of implementing an SMI controller.
-Base controller setup, conversion webhooks and validation are handled by the SDK, 
-the end user only needs to implement the business  logic for the base level API in the smi spec `v1aplha1`.
+Base controller setup, conversion webhooks and validation are handled by this SDK, and
+the end user only needs to implement the business logic for the base level API in the smi spec `v1aplha1`.
 
-Since the conversion webhooks convert other API versions to the base API which is then passed as 
+Since the conversion webhooks convert other API versions to the base API which is then passed as
 a value to a function in your implementation. The design intention is to make it a trivial operation to
 handle all SMI versions and to give a simple and easy upgrade path.
 
-The other intention behind this SDK is to enable separation between the logic of writing a Kubernetes 
+The other intention behind this SDK is to enable separation between the logic of writing a Kubernetes
 controller and the logic executed upon receiving an event. It should be possible to write a high level
 of unit tests without needing to run the controller and Kubernetes.
 
 ## EXAMPLE: Implementing the SDK and creating a controller to handle Upsert and Delete for access.smi-spec.io/v1alpha1.TrafficTarget resources
 
 To implement the SDK you need to create structs that implement the callback methods you would
-like to receive. The SDK handles the Kubernetes lifecycle of the SMI resources as they are added 
-and deleted from the Kubernets cluster saving you the job of writing custom controller code.
+like to receive. The SDK handles the Kubernetes lifecycle of the SMI resources as they are added
+and deleted from the Kubernetes cluster saving you the job of writing custom controller code.
 
 You only need to write the custom logic you would like to execute when for example a new `TrafficTarget`
 resource is dded to the cluster. In addition by using the SDK you only need to implement methods you
@@ -207,11 +207,11 @@ shipyard_version: ">= 0.2.1"
 ....
 ```
 
-Shipyard is available for all platforms and can be installed by following the instructions on the 
+Shipyard is available for all platforms and can be installed by following the instructions on the
 Shipyard website: [https://shipyard.run/docs/install](https://shipyard.run/docs/install)
 
-Shipyard exposes the controller and webhooks running on your local machine to the local 
-Kubernetes cluster. 
+Shipyard exposes the controller and webhooks running on your local machine to the local
+Kubernetes cluster.
 
 Shipyard places the Kubernetes config file needed for interacting with the server int `$HOME/.shipyard/config/dc1/kubeconfig.yaml`
 you can use the command `export KUBECONFIG=$(shipyard output KUBECONFIG)` to set this as an environment variable.
