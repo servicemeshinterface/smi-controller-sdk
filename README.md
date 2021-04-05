@@ -78,8 +78,8 @@ The full example can be seen below
 package main
 
 import (
-	"github.com/nicholasjackson/smi-controller-sdk/sdk"
-	"github.com/nicholasjackson/smi-controller-sdk/sdk/controller"
+	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
+	"github.com/servicemeshinterface/smi-controller-sdk/sdk/controller"
 )
 
 type logger struct {}
@@ -133,7 +133,7 @@ The below output shows the controller in action when a new `TrafficTarget` resou
 
 ## Installing the example logging controller
 
-To install the example logging SMI controller you can use the provided Helm chart. Before installing the chart ensure you have Cert Manager running on your system or execut the following commands to install:
+To install the example logging SMI controller you can use the provided Helm chart. Before installing the chart, ensure you have Cert Manager running on your system or execute the following commands to install:
 
 ```shell
 $ kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.1.0/cert-manager.crds.yaml
@@ -167,19 +167,19 @@ make update_helm
 
 ```shell
 helm package ./helm/smi-controller
-Successfully packaged chart and saved it to: /home/nicj/code/src/github.com/nicholasjackson/smi-controller-sdk/smi-controller-0.1.0.tgz
+Successfully packaged chart and saved it to: /home/nicj/code/src/github.com/servicemeshinterface/smi-controller-sdk/smi-controller-0.1.0.tgz
 mv smi-controller-0.1.0.tgz ./docs/
 cd ./docs && helm repo index .
 ```
 
-This repository uses GitHub pages to serve a Helm chart repo from the docs folder, commiting 
-the changes created with the previous command to the `main` branch will automatically update the 
+This repository uses GitHub pages to serve a Helm chart repo from the docs folder, commiting
+the changes created with the previous command to the `main` branch will automatically update the
 repository and start serving the new chart version.
 
 ## Developing Locally
 
-To create a tests Kubernetes cluster on Docker that you can use when developing the Controller SDK
-you can use the included Shipyard blueprint that will create the cluster and install any 
+To create a test Kubernetes cluster on Docker that you can use when developing the Controller SDK
+you can use the included Shipyard blueprint that will create the cluster and install any
 pre-requistes.
 
 
@@ -191,7 +191,7 @@ Running configuration from:  ./shipyard
 2021-02-26T17:18:44.822Z [INFO]  Creating Network: ref=dc1
 2021-02-26T17:18:44.845Z [INFO]  Creating Cluster: ref=dc1
 2021-02-26T17:19:38.654Z [INFO]  Create Ingress: ref=smi-webhook
-2021-02-26T17:19:38.654Z [INFO]  Applying Kubernetes configuration: ref=cert-manager config=[/home/nicj/go/src/github.com/nicholasjackson/smi-controller-sdk/shipyard/modules/smi-controller/cert-manager.crds.yaml]
+2021-02-26T17:19:38.654Z [INFO]  Applying Kubernetes configuration: ref=cert-manager config=[/home/nicj/go/src/github.com/servicemeshinterface/smi-controller-sdk/shipyard/modules/smi-controller/cert-manager.crds.yaml]
 2021-02-26T17:19:38.858Z [INFO]  Creating Helm chart: ref=cert-manager
 2021-02-26T17:19:53.291Z [INFO]  Creating Helm chart: ref=smi-controler
 
@@ -236,11 +236,11 @@ I0226 17:24:40.411612   23455 request.go:621] Throttling request took 1.0387667s
 You can test the setup by applying one of the local configuration files
 
 ```shell
-➜ k apply -f ./examples/traffictarget_v2.yaml 
+➜ kubectl apply -f ./examples/traffictarget_v2.yaml
 traffictarget.access.smi-spec.io/path-specific-v2 created
 ```
 
-Looking at the logs you will see that the locally running code has handled the webhook conversion and the 
+Looking at the logs you will see that the locally running example code has handled the webhook conversion and the
 controller code.
 
 ```shell
@@ -266,7 +266,7 @@ To remove any resources created by Shipyard you can use the command `shipyard de
 2021-02-26T17:34:30.516Z [INFO]  Destroy Ingress: ref=smi-webhook id=d199780b-2066-41da-80d4-4294cc13adcb
 2021-02-26T17:34:30.516Z [INFO]  Destroy Helm chart: ref=smi-controler
 2021-02-26T17:34:30.525Z [INFO]  Destroy Helm chart: ref=cert-manager
-2021-02-26T17:34:30.526Z [INFO]  Destroy Kubernetes configuration: ref=cert-manager config=[/home/nicj/go/src/github.com/nicholasjackson/smi-controller-sdk/shipyard/modules/smi-controller/cert-manager.crds.yaml]
+2021-02-26T17:34:30.526Z [INFO]  Destroy Kubernetes configuration: ref=cert-manager config=[/home/nicj/go/src/github.com/servicemeshinterface/smi-controller-sdk/shipyard/modules/smi-controller/cert-manager.crds.yaml]
 2021-02-26T17:34:30.687Z [INFO]  Destroy Cluster: ref=dc1
 2021-02-26T17:34:31.215Z [INFO]  Destroy Network: ref=dc1
 ```
@@ -310,7 +310,7 @@ Ran 1 of 1 Specs in 3.739 seconds
 SUCCESS! -- 1 Passed | 0 Failed | 0 Pending | 0 Skipped
 --- PASS: TestAPIs (3.74s)
 PASS
-ok      github.com/nicholasjackson/smi-controller-sdk/controllers       3.753s
+ok      github.com/servicemeshinterface/smi-controller-sdk/controllers       3.753s
 ```
 
 ### End To End Tests

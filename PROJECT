@@ -1,5 +1,5 @@
 domain: smi-spec.io
-repo: github.com/nicholasjackson/smi-controller-sdk
+repo: github.com/servicemeshinterface/smi-controller-sdk
 resources:
 - group: split
   kind: TrafficSplit
