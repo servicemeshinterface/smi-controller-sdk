@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/nicholasjackson/smi-controller-sdk/examples/logging"
-	"github.com/nicholasjackson/smi-controller-sdk/sdk"
-	"github.com/nicholasjackson/smi-controller-sdk/sdk/controller"
+	"github.com/servicemeshinterface/smi-controller-sdk/examples/logging"
+	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
+	"github.com/servicemeshinterface/smi-controller-sdk/sdk/controller"
 )
 
 func main() {

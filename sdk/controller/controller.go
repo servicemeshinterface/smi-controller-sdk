@@ -21,7 +21,7 @@ import (
 	splitv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha2"
 	splitv1alpha3 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha3"
 
-	"github.com/nicholasjackson/smi-controller-sdk/controllers"
+	"github.com/servicemeshinterface/smi-controller-sdk/controllers"
 )
 
 var (
