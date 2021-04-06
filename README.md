@@ -146,7 +146,7 @@ $ helm install --name my-release --namespace cert-manager jetstack/cert-manager
 You can then install the example using the helm chart:
 
 ```shell
-helm repo add smi-controler https://nicholasjackson.io/smi-controller-sdk/
+helm repo add smi-controler https://servicemeshinterface.github.io/smi-controller-sdk/
 
 helm install smi-controller smi-controller/smi-controller
 ```
