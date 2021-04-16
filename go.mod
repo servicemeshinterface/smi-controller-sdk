@@ -11,10 +11,10 @@ require (
 	github.com/onsi/gomega v1.10.2
 	github.com/servicemeshinterface/smi-sdk-go v0.4.1
 	github.com/stretchr/testify v1.6.1
-	k8s.io/api v0.18.8
-	k8s.io/apimachinery v0.18.8
-	k8s.io/client-go v0.18.8
-	sigs.k8s.io/controller-runtime v0.6.0
+	k8s.io/api v0.19.2
+	k8s.io/apimachinery v0.19.2
+	k8s.io/client-go v0.19.2
+	sigs.k8s.io/controller-runtime v0.7.2
 )
 
 //replace github.com/servicemeshinterface/smi-sdk-go v0.4.1 => ../servicemeshinterface/smi-sdk-go
