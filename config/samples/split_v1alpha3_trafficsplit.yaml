@@ -1,0 +1,22 @@
+apiVersion: split.smi-spec.io/v1alpha3
+kind: TrafficSplit
+metadata:
+  name: ab-test
+spec:
+  service: website
+  matches:
+  - kind: HTTPRouteGroup
+    name: ab-test
+  backends:
+  - service: website-v1
+    weight: 0
+  - service: website-v2
+    weight: 100
+---
+kind: HTTPRouteGroup
+metadata:
+  name: ab-test
+matches:
+- name: firefox-users
+  headers:
+  - user-agent: ".*Firefox.*"

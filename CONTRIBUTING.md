@@ -1,6 +1,6 @@
 # Contributing
 
-Please open a GitHub [issue][1] to file an issue or feature request. Please create a [pull request][2] to make a contribution. Pull requests must be reviewed and approved by at least one [project maintainer](./CODEOWNERS) before being merged.
+Please open a GitHub [issue][1] to file an issue or feature request. Please create a [pull request][2] to make a contribution. Pull requests must be reviewed and approved by at least one [project maintainer](./CODEOWNERS) before being merged. Review the [developer guide](docs/developer_guide.md) for more information on the project layout, tools used, and how to build, develop, and test the smi-controller-sdk project.
 
 ## Sign Your Work
 

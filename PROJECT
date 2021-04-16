@@ -1,16 +1,44 @@
 domain: smi-spec.io
+layout:
+- go.kubebuilder.io/v3
+multigroup: true
+projectName: smi-controller-sdk
 repo: github.com/servicemeshinterface/smi-controller-sdk
 resources:
-- group: split
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: split
   kind: TrafficSplit
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha1
   version: v1alpha1
-- group: access
-  kind: TrafficTarget
-  version: v1alpha3
-- group: access
-  kind: TrafficTarget
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: split
+  kind: TrafficSplit
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha2
   version: v1alpha2
-- group: access
-  kind: TrafficTarget
-  version: v1alpha1
-version: "2"
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: split
+  kind: TrafficSplit
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha3
+  version: v1alpha3
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: split
+  kind: TrafficSplit
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4
+  version: v1alpha4
+version: "3"

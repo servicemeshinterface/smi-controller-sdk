@@ -1,0 +1,24 @@
+# permissions for end users to edit trafficsplits.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: trafficsplit-editor-role
+rules:
+- apiGroups:
+  - split.smi-spec.io
+  resources:
+  - trafficsplits
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - split.smi-spec.io
+  resources:
+  - trafficsplits/status
+  verbs:
+  - get

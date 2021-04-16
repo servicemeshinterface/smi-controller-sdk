@@ -1,0 +1,20 @@
+# permissions for end users to view trafficsplits.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: trafficsplit-viewer-role
+rules:
+- apiGroups:
+  - split.smi-spec.io
+  resources:
+  - trafficsplits
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - split.smi-spec.io
+  resources:
+  - trafficsplits/status
+  verbs:
+  - get
