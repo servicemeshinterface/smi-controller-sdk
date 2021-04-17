@@ -41,4 +41,20 @@ resources:
   kind: TrafficSplit
   path: github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4
   version: v1alpha4
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: smi-spec.io
+  group: specs
+  kind: HTTPRouteGroup
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha2
+  version: v1alpha2
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: smi-spec.io
+  group: specs
+  kind: HTTPRouteGroup
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha3
+  version: v1alpha3
 version: "3"
