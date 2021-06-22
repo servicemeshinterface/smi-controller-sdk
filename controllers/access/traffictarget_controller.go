@@ -14,37 +14,46 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package controllers
+package access
 
 import (
 	"context"
 
-	"github.com/go-logr/logr"
+	"github.com/servicemeshinterface/smi-controller-sdk/controllers/helpers"
 	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	accessv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha1"
+	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
 )
 
 // TrafficTargetReconciler reconciles a TrafficTarget object
 type TrafficTargetReconciler struct {
 	client.Client
-	Log    logr.Logger
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=access.smi-spec.io,resources=traffictargets,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=access.smi-spec.io,resources=traffictargets/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=access.smi-spec.io,resources=traffictargets,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=access.smi-spec.io,resources=traffictargets/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=access.smi-spec.io,resources=traffictargets/finalizers,verbs=update
 
-func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	ctx := context.Background()
-	_ = r.Log.WithValues("traffictarget", req.NamespacedName)
+// Reconcile is part of the main kubernetes reconciliation loop which aims to
+// move the current state of the cluster closer to the desired state.
+// TODO(user): Modify the Reconcile function to compare the state specified by
+// the TrafficTarget object against the actual cluster state, and then
+// perform operations to make the cluster state reflect the state specified by
+// the user.
+//
+// For more details, check Reconcile and its Result here:
+// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
+func (r *TrafficTargetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	logger := log.FromContext(ctx)
 
-	tt := &accessv1alpha1.TrafficTarget{}
+	tt := &accessv1alpha3.TrafficTarget{}
 	if err := r.Get(ctx, req.NamespacedName, tt); err != nil {
-		r.Log.Info("unable to fetch TrafficTarget, most likely deleted")
+		logger.Info("unable to fetch TrafficTarget, most likely deleted")
 		// we'll ignore not-found errors, since they can't be fixed by an immediate
 		// requeue (we'll need to wait for a new notification), and we can get them
 		// on deleted requests.
@@ -58,7 +67,7 @@ func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		// The object is not being deleted, so if it does not have our finalizer,
 		// then lets add the finalizer and update the object. This is equivalent
 		// registering our finalizer.
-		if !containsString(tt.ObjectMeta.Finalizers, ttFinalizerName) {
+		if !helpers.ContainsString(tt.ObjectMeta.Finalizers, ttFinalizerName) {
 			tt.ObjectMeta.Finalizers = append(tt.ObjectMeta.Finalizers, ttFinalizerName)
 			if err := r.Update(context.Background(), tt); err != nil {
 				return ctrl.Result{}, err
@@ -66,12 +75,12 @@ func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		}
 	} else {
 		// The object is being deleted
-		if containsString(tt.ObjectMeta.Finalizers, ttFinalizerName) {
+		if helpers.ContainsString(tt.ObjectMeta.Finalizers, ttFinalizerName) {
 			// our finalizer is present, so lets handle any external dependency
-			sdk.API().V1Alpha().DeleteTrafficTarget(ctx, r.Client, r.Log, tt)
+			sdk.API().V1Alpha().DeleteTrafficTarget(ctx, r.Client, logger, tt)
 
 			// remove our finalizer from the list and update it.
-			tt.ObjectMeta.Finalizers = removeString(tt.ObjectMeta.Finalizers, ttFinalizerName)
+			tt.ObjectMeta.Finalizers = helpers.RemoveString(tt.ObjectMeta.Finalizers, ttFinalizerName)
 			if err := r.Update(context.Background(), tt); err != nil {
 				return ctrl.Result{}, err
 			}
@@ -81,31 +90,11 @@ func (r *TrafficTargetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		return ctrl.Result{}, nil
 	}
 
-	return sdk.API().V1Alpha().UpsertTrafficTarget(ctx, r.Client, r.Log, tt)
+	return sdk.API().V1Alpha().UpsertTrafficTarget(ctx, r.Client, logger, tt)
 }
 
 func (r *TrafficTargetReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&accessv1alpha1.TrafficTarget{}).
+		For(&accessv1alpha3.TrafficTarget{}).
 		Complete(r)
-}
-
-// Helper functions to check and remove string from a slice of strings.
-func containsString(slice []string, s string) bool {
-	for _, item := range slice {
-		if item == s {
-			return true
-		}
-	}
-	return false
-}
-
-func removeString(slice []string, s string) (result []string) {
-	for _, item := range slice {
-		if item == s {
-			continue
-		}
-		result = append(result, item)
-	}
-	return
 }

@@ -18,11 +18,6 @@ jobs:
       with:
         go-version: 1.15
 
-    - name: Setup Functional Tests
-      run: |
-        curl https://shipyard.run/install | bash
-        shipyard run ./shipyard
-
     - name: Setup Kubebuilder
       run: |
         os=$(go env GOOS)
@@ -33,13 +28,34 @@ jobs:
 
         sudo mv /tmp/kubebuilder_2.3.1_${os}_${arch} /usr/local/kubebuilder
         export PATH=$PATH:/usr/local/kubebuilder/bin
+   
+    - name: Check Kubebuilder can generate CRDs
+      run: make manifests
     
+    - name: Check Kubebuilder can generate deep copy objects
+      run: make generate
+
     - name: Build
       run: go build -v ./...
 
     - name: Unit Test
       run: go test -v ./...
     
+  functional_test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15
+
+    - name: Setup Functional Tests
+      run: |
+        curl https://shipyard.run/install | bash
+        shipyard run ./shipyard
+
     - name: Run Functional Tests
       run: |
         eval $(shipyard env)

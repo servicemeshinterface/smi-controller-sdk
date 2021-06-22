@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/go-logr/logr"
-	accessv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha1"
-	splitv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
+	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
+	splitv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4"
 	"github.com/stretchr/testify/mock"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
@@ -28,7 +28,7 @@ func setupSDKTests(t *testing.T) (*V1AlphaMock, *api, logr.Logger) {
 func TestCallsUserDefinedUpsertTrafficTargetWhenSet(t *testing.T) {
 	v1, a, l := setupSDKTests(t)
 
-	a.V1Alpha().UpsertTrafficTarget(nil, nil, l, &accessv1alpha1.TrafficTarget{})
+	a.V1Alpha().UpsertTrafficTarget(nil, nil, l, &accessv1alpha3.TrafficTarget{})
 
 	v1.AssertCalled(t, "UpsertTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 }
@@ -37,7 +37,7 @@ func TestDoesNotCallsUserDefinedUpsertTrafficTargetWhenNotSet(t *testing.T) {
 	v1, a, l := setupSDKTests(t)
 	a.RegisterV1Alpha(nil)
 
-	a.V1Alpha().UpsertTrafficTarget(nil, nil, l, &accessv1alpha1.TrafficTarget{})
+	a.V1Alpha().UpsertTrafficTarget(nil, nil, l, &accessv1alpha3.TrafficTarget{})
 
 	v1.AssertNotCalled(t, "UpsertTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 }
@@ -45,7 +45,7 @@ func TestDoesNotCallsUserDefinedUpsertTrafficTargetWhenNotSet(t *testing.T) {
 func TestCallsUserDefinedUpsertTrafficSplitWhenSet(t *testing.T) {
 	v1, a, l := setupSDKTests(t)
 
-	a.V1Alpha().UpsertTrafficSplit(nil, nil, l, &splitv1alpha1.TrafficSplit{})
+	a.V1Alpha().UpsertTrafficSplit(nil, nil, l, &splitv1alpha3.TrafficSplit{})
 
 	v1.AssertCalled(t, "UpsertTrafficSplit", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 }
@@ -54,7 +54,7 @@ func TestDoesNotCallsUserDefinedUpsertTrafficSplitWhenNotSet(t *testing.T) {
 	v1, a, l := setupSDKTests(t)
 	a.RegisterV1Alpha(nil)
 
-	a.V1Alpha().UpsertTrafficSplit(nil, nil, l, &splitv1alpha1.TrafficSplit{})
+	a.V1Alpha().UpsertTrafficSplit(nil, nil, l, &splitv1alpha3.TrafficSplit{})
 
 	v1.AssertNotCalled(t, "UpsertTrafficSplit", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 }

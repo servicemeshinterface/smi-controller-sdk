@@ -15,14 +15,20 @@ import (
 	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
 	"github.com/servicemeshinterface/smi-controller-sdk/sdk/controller"
 	"github.com/stretchr/testify/mock"
-	"k8s.io/apimachinery/pkg/api/resource"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/kubectl/pkg/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	splitv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
-	splitClientSet "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned"
+	accessv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha1"
+	accessv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha2"
+
+	splitv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha1"
+	splitv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha2"
+	splitv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha3"
+	splitv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4"
 )
 
 var opts = &godog.Options{
@@ -32,9 +38,10 @@ var opts = &godog.Options{
 
 var mockAPI *MockAPI
 var logger logr.Logger
+var k8sClient client.Client
 
 // store a reference to any objects submitted to the controller for later cleanup
-var trafficSplits []*splitv1alpha1.TrafficSplit
+var trafficSplits []*splitv1alpha4.TrafficSplit
 
 func main() {
 	godog.BindFlags("godog.", flag.CommandLine, opts)
@@ -49,9 +56,54 @@ func main() {
 	os.Exit(status)
 }
 
+func setupClient() error {
+	err := accessv1alpha1.AddToScheme(scheme.Scheme)
+	if err != nil {
+		return err
+	}
+
+	err = accessv1alpha2.AddToScheme(scheme.Scheme)
+	if err != nil {
+		return err
+	}
+
+	err = splitv1alpha1.AddToScheme(scheme.Scheme)
+	if err != nil {
+		return err
+	}
+
+	err = splitv1alpha2.AddToScheme(scheme.Scheme)
+	if err != nil {
+		return err
+	}
+
+	err = splitv1alpha3.AddToScheme(scheme.Scheme)
+	if err != nil {
+		return err
+	}
+
+	err = splitv1alpha4.AddToScheme(scheme.Scheme)
+	if err != nil {
+		return err
+	}
+
+	c := getK8sConfig()
+	k8sClient, err = client.New(c, client.Options{Scheme: scheme.Scheme})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func initializeSuite(ctx *godog.ScenarioContext) {
-	trafficSplits = []*splitv1alpha1.TrafficSplit{}
+	trafficSplits = []*splitv1alpha4.TrafficSplit{}
 	logger = Log()
+
+	err := setupClient()
+	if err != nil {
+		panic(err)
+	}
 
 	ctx.Step(`^the server is running$`, theServerIsRunning)
 	ctx.Step(`^I create a TrafficSplitter$`, iCreateATrafficSplitter)
@@ -67,15 +119,8 @@ func initializeSuite(ctx *godog.ScenarioContext) {
 }
 
 func cleanupTrafficSplit() {
-	c := getK8sConfig()
-	sl, err := splitClientSet.NewForConfig(c)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	for _, ts := range trafficSplits {
-		sl.SplitV1alpha1().TrafficSplits("default").Delete(context.Background(), ts.Name, v1.DeleteOptions{})
-	}
+	ctx := context.Background()
+	k8sClient.DeleteAllOf(ctx, &splitv1alpha4.TrafficSplit{}, &client.DeleteAllOfOptions{})
 }
 
 func theServerIsRunning() error {
@@ -110,29 +155,21 @@ func theServerIsRunning() error {
 }
 
 func iCreateATrafficSplitter() error {
-	c := getK8sConfig()
-	sl, err := splitClientSet.NewForConfig(c)
-	if err != nil {
-		return err
-	}
-
-	ts := &splitv1alpha1.TrafficSplit{
+	ts := &splitv1alpha4.TrafficSplit{
 		ObjectMeta: v1.ObjectMeta{Name: "testing"},
-		Spec: splitv1alpha1.TrafficSplitSpec{
+		Spec: splitv1alpha4.TrafficSplitSpec{
 			Service: "myService",
-			Backends: []splitv1alpha1.TrafficSplitBackend{
-				splitv1alpha1.TrafficSplitBackend{
+			Backends: []splitv1alpha4.TrafficSplitBackend{
+				splitv1alpha4.TrafficSplitBackend{
 					Service: "v1",
-					Weight:  resource.NewQuantity(100, resource.BinarySI),
+					Weight:  100,
 				},
 			},
 		},
 	}
 
-	// add to our collection so we can cleanup later
-	trafficSplits = append(trafficSplits, ts)
-
-	ts, err = sl.SplitV1alpha1().TrafficSplits("default").Create(context.Background(), ts, v1.CreateOptions{})
+	ctx := context.Background()
+	err := k8sClient.Create(ctx, ts, &client.CreateOptions{})
 
 	return err
 }

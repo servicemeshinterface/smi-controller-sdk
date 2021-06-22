@@ -1,5 +1,6 @@
 /*
 
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -13,37 +14,46 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package controllers
+package split
 
 import (
 	"context"
 
-	"github.com/go-logr/logr"
+	"github.com/servicemeshinterface/smi-controller-sdk/controllers/helpers"
 	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	splitv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
+	splitv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4"
 )
 
-// TrafficTargetReconciler reconciles a TrafficTarget object
+// TrafficSplitReconciler reconciles a TrafficSplit object
 type TrafficSplitReconciler struct {
 	client.Client
-	Log    logr.Logger
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=access.smi-spec.io,resources=traffictargets,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=access.smi-spec.io,resources=traffictargets/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=split.smi-spec.io,resources=trafficsplits,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=split.smi-spec.io,resources=trafficsplits/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=split.smi-spec.io,resources=trafficsplits/finalizers,verbs=update
 
-func (r *TrafficSplitReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	ctx := context.Background()
-	_ = r.Log.WithValues("trafficsplit", req.NamespacedName)
+// Reconcile is part of the main kubernetes reconciliation loop which aims to
+// move the current state of the cluster closer to the desired state.
+// TODO(user): Modify the Reconcile function to compare the state specified by
+// the TrafficSplit object against the actual cluster state, and then
+// perform operations to make the cluster state reflect the state specified by
+// the user.
+//
+// For more details, check Reconcile and its Result here:
+// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
+func (r *TrafficSplitReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	logger := log.FromContext(ctx)
 
-	ts := &splitv1alpha1.TrafficSplit{}
+	ts := &splitv1alpha4.TrafficSplit{}
 	if err := r.Get(ctx, req.NamespacedName, ts); err != nil {
-		r.Log.Info("unable to fetch TrafficSplit, most likely deleted")
+		logger.Info("unable to fetch TrafficSplit, most likely deleted")
 		// we'll ignore not-found errors, since they can't be fixed by an immediate
 		// requeue (we'll need to wait for a new notification), and we can get them
 		// on deleted requests.
@@ -57,7 +67,7 @@ func (r *TrafficSplitReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error
 		// The object is not being deleted, so if it does not have our finalizer,
 		// then lets add the finalizer and update the object. This is equivalent
 		// registering our finalizer.
-		if !containsString(ts.ObjectMeta.Finalizers, tsFinalizerName) {
+		if !helpers.ContainsString(ts.ObjectMeta.Finalizers, tsFinalizerName) {
 			ts.ObjectMeta.Finalizers = append(ts.ObjectMeta.Finalizers, tsFinalizerName)
 			if err := r.Update(context.Background(), ts); err != nil {
 				return ctrl.Result{}, err
@@ -65,12 +75,12 @@ func (r *TrafficSplitReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error
 		}
 	} else {
 		// The object is being deleted
-		if containsString(ts.ObjectMeta.Finalizers, tsFinalizerName) {
+		if helpers.ContainsString(ts.ObjectMeta.Finalizers, tsFinalizerName) {
 			// our finalizer is present, so lets handle any external dependency
-			sdk.API().V1Alpha().DeleteTrafficSplit(ctx, r.Client, r.Log, ts)
+			sdk.API().V1Alpha().DeleteTrafficSplit(ctx, r.Client, logger, ts)
 
 			// remove our finalizer from the list and update it.
-			ts.ObjectMeta.Finalizers = removeString(ts.ObjectMeta.Finalizers, tsFinalizerName)
+			ts.ObjectMeta.Finalizers = helpers.RemoveString(ts.ObjectMeta.Finalizers, tsFinalizerName)
 			if err := r.Update(context.Background(), ts); err != nil {
 				return ctrl.Result{}, err
 			}
@@ -80,11 +90,11 @@ func (r *TrafficSplitReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error
 		return ctrl.Result{}, nil
 	}
 
-	return sdk.API().V1Alpha().UpsertTrafficSplit(ctx, r.Client, r.Log, ts)
+	return sdk.API().V1Alpha().UpsertTrafficSplit(ctx, r.Client, logger, ts)
 }
 
 func (r *TrafficSplitReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&splitv1alpha1.TrafficSplit{}).
+		For(&splitv1alpha4.TrafficSplit{}).
 		Complete(r)
 }

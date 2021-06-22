@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
-	accessv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha1"
-	splitv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
+	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
+	splitv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -17,7 +17,7 @@ type UpsertTrafficTarget interface {
 		ctx context.Context,
 		r client.Client,
 		l logr.Logger,
-		tt *accessv1alpha1.TrafficTarget) (ctrl.Result, error)
+		tt *accessv1alpha3.TrafficTarget) (ctrl.Result, error)
 }
 
 // DeleteTrafficTarget defines a callback function for deleting
@@ -27,7 +27,7 @@ type DeleteTrafficTarget interface {
 		ctx context.Context,
 		r client.Client,
 		l logr.Logger,
-		tt *accessv1alpha1.TrafficTarget) (ctrl.Result, error)
+		tt *accessv1alpha3.TrafficTarget) (ctrl.Result, error)
 }
 
 // UpsertTrafficSplit defines a callback function for updating or
@@ -37,7 +37,7 @@ type UpsertTrafficSplit interface {
 		ctx context.Context,
 		r client.Client,
 		l logr.Logger,
-		tt *splitv1alpha1.TrafficSplit) (ctrl.Result, error)
+		tt *splitv1alpha4.TrafficSplit) (ctrl.Result, error)
 }
 
 // DeleteTrafficSplit defines a callback function for deleting
@@ -47,7 +47,7 @@ type DeleteTrafficSplit interface {
 		ctx context.Context,
 		r client.Client,
 		l logr.Logger,
-		tt *splitv1alpha1.TrafficSplit) (ctrl.Result, error)
+		tt *splitv1alpha4.TrafficSplit) (ctrl.Result, error)
 }
 
 // V1Alpha defines an interface containing callback methods for the v1alpha2 API
@@ -76,7 +76,7 @@ func (a *v1AlphaImpl) UpsertTrafficTarget(
 	ctx context.Context,
 	r client.Client,
 	l logr.Logger,
-	tt *accessv1alpha1.TrafficTarget,
+	tt *accessv1alpha3.TrafficTarget,
 ) (ctrl.Result, error) {
 
 	// does the user api have this callback?
@@ -95,7 +95,7 @@ func (a *v1AlphaImpl) DeleteTrafficTarget(
 	ctx context.Context,
 	r client.Client,
 	l logr.Logger,
-	tt *accessv1alpha1.TrafficTarget,
+	tt *accessv1alpha3.TrafficTarget,
 ) (ctrl.Result, error) {
 
 	// does the user api have this callback?
@@ -116,7 +116,7 @@ func (a *v1AlphaImpl) UpsertTrafficSplit(
 	ctx context.Context,
 	r client.Client,
 	l logr.Logger,
-	tt *splitv1alpha1.TrafficSplit,
+	tt *splitv1alpha4.TrafficSplit,
 ) (ctrl.Result, error) {
 
 	// does the user api have this callback?
@@ -135,7 +135,7 @@ func (a *v1AlphaImpl) DeleteTrafficSplit(
 	ctx context.Context,
 	r client.Client,
 	l logr.Logger,
-	tt *splitv1alpha1.TrafficSplit,
+	tt *splitv1alpha4.TrafficSplit,
 ) (ctrl.Result, error) {
 
 	// does the user api have this callback?
