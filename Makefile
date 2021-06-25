@@ -1,5 +1,5 @@
 DOCKER_REPO=nicholasjackson/smi-controller-example
-DOCKER_VERSION=dev
+DOCKER_VERSION=0.1.0
 
 build_docker:
 	docker build -t ${DOCKER_REPO}:${DOCKER_VERSION} .
@@ -7,19 +7,31 @@ build_docker:
 push_docker:
 	docker push ${DOCKER_REPO}:${DOCKER_VERSION}
 
-update_helm:
+generate_helm: manifests
+# First generate the Helm specific kustomize config that creates the RBAC and CRDs
+	kustomize build ./config/helm -o ./helm/smi-controller/templates
+
+# Delete extra files
+	rm ./helm/smi-controller/templates/v1_service_smi-controller-controller-manager-metrics-service.yaml
+	rm ./helm/smi-controller/templates/v1_serviceaccount_smi-controller-controller-manager.yaml
+
+# Now package the Helm chart into a tarball
 	helm package ./helm/smi-controller
-	mv smi-controller-0.1.0.tgz ./docs/
+
+# Move it to the ./docs folder used to serve Github Pages
+	mv smi-controller-${DOCKER_VERSION}.tgz ./docs/
+
+# Generate the index
 	cd ./docs && helm repo index .
 
 fetch_certs:
 	mkdir -p /tmp/k8s-webhook-server/serving-certs/
 	
-	kubectl get secret controller-webhook-certificate -n smi -o json | \
+	kubectl get secret smi-controller-webhook-certificate -n smi -o json | \
 		jq -r '.data."tls.crt"' | \
 		base64 -d > /tmp/k8s-webhook-server/serving-certs/tls.crt
 	
-	kubectl get secret controller-webhook-certificate -n smi -o json | \
+	kubectl get secret smi-controller-webhook-certificate -n smi -o json | \
 		jq -r '.data."tls.key"' | \
 		base64 -d > /tmp/k8s-webhook-server/serving-certs/tls.key
 

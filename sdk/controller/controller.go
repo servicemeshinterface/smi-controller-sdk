@@ -23,6 +23,11 @@ import (
 	splitv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha3"
 	splitv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4"
 
+	specsv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha1"
+	specsv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha2"
+	specsv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha3"
+	specsv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha4"
+
 	accesscontrollers "github.com/servicemeshinterface/smi-controller-sdk/controllers/access"
 	specscontrollers "github.com/servicemeshinterface/smi-controller-sdk/controllers/specs"
 	splitcontrollers "github.com/servicemeshinterface/smi-controller-sdk/controllers/split"
@@ -68,6 +73,11 @@ func init() {
 	_ = splitv1alpha2.AddToScheme(scheme)
 	_ = splitv1alpha3.AddToScheme(scheme)
 	_ = splitv1alpha4.AddToScheme(scheme)
+
+	_ = specsv1alpha1.AddToScheme(scheme)
+	_ = specsv1alpha2.AddToScheme(scheme)
+	_ = specsv1alpha3.AddToScheme(scheme)
+	_ = specsv1alpha4.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
 
@@ -156,6 +166,7 @@ func Start(config Config) {
 	}
 
 	if config.WebhooksEnabled {
+		// Access conversion webhooks
 		if err = (&accessv1alpha1.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha1.TrafficTarget")
 			os.Exit(1)
@@ -165,16 +176,43 @@ func Start(config Config) {
 			os.Exit(1)
 		}
 
+		// Splits conversion webhooks
 		if err = (&splitv1alpha1.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha1.TrafficSplit")
 			os.Exit(1)
 		}
 		if err = (&splitv1alpha2.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha1.TrafficSplit")
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha2.TrafficSplit")
 			os.Exit(1)
 		}
 		if err = (&splitv1alpha3.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha1.TrafficSplit")
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha3.TrafficSplit")
+			os.Exit(1)
+		}
+
+		// Specs conversion webhooks
+		if err = (&specsv1alpha1.HTTPRouteGroup{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha1.HTTPRouteGroup")
+			os.Exit(1)
+		}
+		if err = (&specsv1alpha2.HTTPRouteGroup{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha2.HTTPRouteGroup")
+			os.Exit(1)
+		}
+		if err = (&specsv1alpha3.HTTPRouteGroup{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha3.HTTPRouteGroup")
+			os.Exit(1)
+		}
+		if err = (&specsv1alpha1.TCPRoute{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "specsv1alpha1.TCPRoute")
+			os.Exit(1)
+		}
+		if err = (&specsv1alpha2.TCPRoute{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "specsv1alpha2.TCPRoute")
+			os.Exit(1)
+		}
+		if err = (&specsv1alpha3.TCPRoute{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "specsv1alpha3.TCPRoute")
 			os.Exit(1)
 		}
 	}

@@ -1,0 +1,7 @@
+controller:
+  enabled: false
+webhook:
+  service: smi-webhook
+  namespace:  shipyard
+  additionalDNSNames:
+    - smi-webhook.shipyard.svc
