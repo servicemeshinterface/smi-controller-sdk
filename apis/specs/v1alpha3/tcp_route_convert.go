@@ -24,7 +24,7 @@ func (src *TCPRoute) ConvertTo(dstRaw conversion.Hub) error {
 	dst.ObjectMeta = src.ObjectMeta
 
 	dst.TypeMeta = src.TypeMeta
-	dst.APIVersion = "v1alpha4"
+	dst.APIVersion = v1alpha4.GroupVersion.Identifier()
 
 	return nil
 }
@@ -42,7 +42,7 @@ func (dst *TCPRoute) ConvertFrom(srcRaw conversion.Hub) error {
 	dst.ObjectMeta = src.ObjectMeta
 
 	dst.TypeMeta = src.TypeMeta
-	dst.APIVersion = "v1alpha3"
+	dst.APIVersion = GroupVersion.Identifier()
 
 	return nil
 }

@@ -16,7 +16,7 @@ func TestConvertHTTPRouteGroupToConvertsFromAlpha4ToAlpha2(t *testing.T) {
 
 	assert.Equal(t, v4HTTPRoute.ObjectMeta, v2Test.ObjectMeta)
 	assert.Equal(t, v4HTTPRoute.TypeMeta.Kind, v2Test.TypeMeta.Kind)
-	assert.Equal(t, "v1alpha3", v2Test.TypeMeta.APIVersion)
+	assert.Equal(t, GroupVersion.Identifier(), v2Test.TypeMeta.APIVersion)
 
 	for i, m := range v4HTTPRoute.Spec.Matches {
 		v2 := v2Test.Matches[i]
@@ -44,7 +44,7 @@ func TestConvertHTTPRouteGroupToConvertsFromAlpha3ToAlpha2(t *testing.T) {
 
 	assert.Equal(t, v2HTTPRoute.ObjectMeta, v4Test.ObjectMeta)
 	assert.Equal(t, v2HTTPRoute.TypeMeta.Kind, v4Test.TypeMeta.Kind)
-	assert.Equal(t, "v1alpha4", v4Test.TypeMeta.APIVersion)
+	assert.Equal(t, v1alpha4.GroupVersion.Identifier(), v4Test.TypeMeta.APIVersion)
 
 	for i, m := range v2HTTPRoute.Matches {
 		v4 := v4Test.Spec.Matches[i]

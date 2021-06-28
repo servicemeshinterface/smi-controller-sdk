@@ -24,7 +24,7 @@ func (src *HTTPRouteGroup) ConvertTo(dstRaw conversion.Hub) error {
 	dst.ObjectMeta = src.ObjectMeta
 
 	dst.TypeMeta = src.TypeMeta
-	dst.APIVersion = "v1alpha4"
+	dst.APIVersion = v1alpha4.GroupVersion.Identifier()
 
 	for _, m := range src.Matches {
 		dst.Spec.Matches = append(dst.Spec.Matches, v1alpha4.HTTPMatch{
@@ -50,7 +50,7 @@ func (dst *HTTPRouteGroup) ConvertFrom(srcRaw conversion.Hub) error {
 	dst.ObjectMeta = src.ObjectMeta
 
 	dst.TypeMeta = src.TypeMeta
-	dst.APIVersion = "v1alpha3"
+	dst.APIVersion = GroupVersion.Identifier()
 
 	for _, m := range src.Spec.Matches {
 		dst.Matches = append(dst.Matches, HTTPMatch{

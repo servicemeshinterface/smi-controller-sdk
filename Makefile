@@ -11,6 +11,9 @@ generate_helm: manifests
 # First generate the Helm specific kustomize config that creates the RBAC and CRDs
 	kustomize build ./config/helm -o ./helm/smi-controller/templates
 
+# Replace port with helm syntax, kustomize rejects Helm syntax not in quotes and this field is an integer
+	sed -i 's/port: 443/port: {{ .Values.webhook.port }}/' ./helm/smi-controller/templates/apiextensions.k8s.io_v1_customresourcedefinition_*.yaml
+
 # Delete extra files
 	rm ./helm/smi-controller/templates/v1_service_smi-controller-controller-manager-metrics-service.yaml
 	rm ./helm/smi-controller/templates/v1_serviceaccount_smi-controller-controller-manager.yaml
@@ -27,11 +30,11 @@ generate_helm: manifests
 fetch_certs:
 	mkdir -p /tmp/k8s-webhook-server/serving-certs/
 	
-	kubectl get secret smi-controller-webhook-certificate -n smi -o json | \
+	kubectl get secret smi-controller-webhook-certificate -n shipyard -o json | \
 		jq -r '.data."tls.crt"' | \
 		base64 -d > /tmp/k8s-webhook-server/serving-certs/tls.crt
 	
-	kubectl get secret smi-controller-webhook-certificate -n smi -o json | \
+	kubectl get secret smi-controller-webhook-certificate -n shipyard -o json | \
 		jq -r '.data."tls.key"' | \
 		base64 -d > /tmp/k8s-webhook-server/serving-certs/tls.key
 

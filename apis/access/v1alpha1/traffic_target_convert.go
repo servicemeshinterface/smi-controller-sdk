@@ -24,7 +24,7 @@ func (src *TrafficTarget) ConvertTo(dstRaw conversion.Hub) error {
 	dst.ObjectMeta = src.ObjectMeta
 
 	dst.TypeMeta = src.TypeMeta
-	dst.APIVersion = "v1alpha3"
+	dst.APIVersion = v1alpha3.GroupVersion.Identifier()
 
 	dst.Spec.Destination = v1alpha3.IdentityBindingSubject{
 		Kind:      src.Destination.Kind,
@@ -70,7 +70,7 @@ func (dst *TrafficTarget) ConvertFrom(srcRaw conversion.Hub) error {
 	dst.ObjectMeta = src.ObjectMeta
 
 	dst.TypeMeta = src.TypeMeta
-	dst.APIVersion = "v1alpha1"
+	dst.APIVersion = GroupVersion.Identifier()
 
 	dst.Destination = IdentityBindingSubject{
 		Kind:      src.Spec.Destination.Kind,

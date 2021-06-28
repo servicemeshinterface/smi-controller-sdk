@@ -11,4 +11,7 @@ spec:
     webhook:
       clientConfig:
         service:
-          name: '{{ include "smi-controller.fullname" . }}'
+          namespace: '{{ default .Release.Namespace }}'
+          name: '{{ .Values.webhook.service }}'
+          path: '{{ default "/convert" .Values.webhook.path }}'
+          port: 443

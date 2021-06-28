@@ -16,7 +16,7 @@ func TestConvertToConvertsFromAlpha4ToAlpha2(t *testing.T) {
 
 	assert.Equal(t, v4TCPRoute.ObjectMeta, v2Test.ObjectMeta)
 	assert.Equal(t, v4TCPRoute.TypeMeta.Kind, v2Test.TypeMeta.Kind)
-	assert.Equal(t, "v1alpha2", v2Test.TypeMeta.APIVersion)
+	assert.Equal(t, GroupVersion.Identifier(), v2Test.TypeMeta.APIVersion)
 }
 
 func TestConvertToConvertsFromAlpha2ToAlpha4(t *testing.T) {
@@ -27,7 +27,7 @@ func TestConvertToConvertsFromAlpha2ToAlpha4(t *testing.T) {
 
 	assert.Equal(t, v2TCPRoute.ObjectMeta, v4Test.ObjectMeta)
 	assert.Equal(t, v2TCPRoute.TypeMeta.Kind, v4Test.TypeMeta.Kind)
-	assert.Equal(t, "v1alpha4", v4Test.TypeMeta.APIVersion)
+	assert.Equal(t, v1alpha4.GroupVersion.Identifier(), v4Test.TypeMeta.APIVersion)
 
 	// should have a blank matches as this does not exist in the v2 spec
 	assert.Equal(t, v1alpha4.TCPRouteSpec{}, v4Test.Spec)

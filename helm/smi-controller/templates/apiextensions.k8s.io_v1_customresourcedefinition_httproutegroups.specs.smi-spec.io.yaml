@@ -11,9 +11,10 @@ spec:
     webhook:
       clientConfig:
         service:
-          name: '{{ include "smi-controller.fullname" . }}'
+          name: '{{ .Values.webhook.service }}'
           namespace: '{{ .Release.Namespace }}'
-          path: /convert
+          path: '{{ default "/convert" .Values.webhook.path }}'
+          port: {{ .Values.webhook.port }}
       conversionReviewVersions:
       - v1
   group: specs.smi-spec.io

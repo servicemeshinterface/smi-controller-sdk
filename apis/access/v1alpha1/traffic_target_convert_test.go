@@ -16,7 +16,7 @@ func TestConvertToConvertsFromAlpha3ToAlpha1(t *testing.T) {
 
 	assert.Equal(t, v3Access.ObjectMeta, v1Test.ObjectMeta)
 	assert.Equal(t, v3Access.TypeMeta.Kind, v1Test.TypeMeta.Kind)
-	assert.Equal(t, "v1alpha1", v1Test.TypeMeta.APIVersion)
+	assert.Equal(t, GroupVersion.Identifier(), v1Test.TypeMeta.APIVersion)
 
 	// test detination
 	assert.Equal(t, v3Access.Spec.Destination.Kind, v1Test.Destination.Kind)
@@ -51,7 +51,7 @@ func TestConvertToConvertsFromAlpha1ToAlpha3(t *testing.T) {
 
 	assert.Equal(t, v1Access.ObjectMeta, v3Test.ObjectMeta)
 	assert.Equal(t, v1Access.TypeMeta.Kind, v3Test.TypeMeta.Kind)
-	assert.Equal(t, "v1alpha3", v3Test.TypeMeta.APIVersion)
+	assert.Equal(t, v1alpha3.GroupVersion.Identifier(), v3Test.TypeMeta.APIVersion)
 
 	// test destination
 	assert.Equal(t, v1Access.Destination.Kind, v3Test.Spec.Destination.Kind)
