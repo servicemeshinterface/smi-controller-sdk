@@ -6,8 +6,7 @@ require (
 	github.com/cucumber/godog v0.11.0
 	github.com/cucumber/messages-go/v10 v10.0.3
 	github.com/go-logr/logr v0.4.0
-	github.com/onsi/ginkgo v1.16.4
-	github.com/onsi/gomega v1.13.0
+	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e
 	github.com/stretchr/testify v1.7.0
 	k8s.io/api v0.21.2
 	k8s.io/apimachinery v0.21.2

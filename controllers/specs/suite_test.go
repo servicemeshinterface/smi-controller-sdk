@@ -20,6 +20,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/servicemeshinterface/smi-controller-sdk/controllers/helpers"
+	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
 	"github.com/stretchr/testify/require"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -54,4 +56,8 @@ func setupSuite(t *testing.T) {
 		ErrorIfCRDPathMissing:    true,
 		AttachControlPlaneOutput: false,
 	}
+
+	// create the mocks and register it with the SDK
+	mock := &helpers.MockAPI{}
+	sdk.API().RegisterV1Alpha(mock)
 }

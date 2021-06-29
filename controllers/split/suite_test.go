@@ -20,14 +20,18 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 
 	accessv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha1"
 	accessv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha2"
+	"github.com/servicemeshinterface/smi-controller-sdk/controllers/helpers"
+	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
 
 	splitv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha1"
 	splitv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha2"
@@ -39,6 +43,7 @@ import (
 var cfg *rest.Config
 var k8sClient client.Client
 var testEnv *envtest.Environment
+var mockAPI *helpers.MockAPI
 
 func TestAPIs(t *testing.T) {
 	t.Cleanup(func() {
@@ -54,7 +59,6 @@ func TestAPIs(t *testing.T) {
 }
 
 func setupSuite(t *testing.T) {
-	//logf.SetLogger(zap.LoggerTo(GinkgoWriter, true))
 	testEnv = &envtest.Environment{
 		CRDDirectoryPaths:        []string{filepath.Join("..", "..", "config", "crd", "bases")},
 		ErrorIfCRDPathMissing:    true,
@@ -85,7 +89,30 @@ func setupSuite(t *testing.T) {
 	require.NoError(t, err)
 
 	// +kubebuilder:scaffold:scheme
+
+	k8sManager, err := ctrl.NewManager(cfg, ctrl.Options{
+		Scheme: scheme.Scheme,
+	})
+	require.NoError(t, err)
+
+	err = (&TrafficSplitReconciler{
+		Client: k8sManager.GetClient(),
+	}).SetupWithManager(k8sManager)
+	require.NoError(t, err)
+
+	go func() {
+		err = k8sManager.Start(ctrl.SetupSignalHandler())
+		require.NoError(t, err)
+	}()
+
 	k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
 	require.NoError(t, err)
 	require.NotNil(t, k8sClient)
+
+	// create the mocks and register it with the SDK
+	mockAPI = &helpers.MockAPI{}
+	sdk.API().RegisterV1Alpha(mockAPI)
+
+	mockAPI.On("UpsertTrafficSplit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
+	mockAPI.On("DeleteTrafficSplit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
 }
