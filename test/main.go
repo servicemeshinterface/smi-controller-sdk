@@ -223,8 +223,6 @@ func iCreateATrafficSplitter(version string) error {
 	default:
 		return fmt.Errorf("Version %s not supported", version)
 	}
-
-	return nil
 }
 
 func iCreateAnAlpha4TrafficSplitter() error {
