@@ -20,6 +20,8 @@ import (
 	"context"
 
 	specsv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha4"
+	"github.com/servicemeshinterface/smi-controller-sdk/controllers/helpers"
+	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -46,11 +48,48 @@ type TCPRouteReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
 func (r *TCPRouteReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	logger := log.FromContext(ctx)
 
-	// your logic here
+	ts := &specsv1alpha4.TCPRoute{}
+	if err := r.Get(ctx, req.NamespacedName, ts); err != nil {
+		logger.Info("unable to fetch TCPRoute, most likely deleted")
+		// we'll ignore not-found errors, since they can't be fixed by an immediate
+		// requeue (we'll need to wait for a new notification), and we can get them
+		// on deleted requests.
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
 
-	return ctrl.Result{}, nil
+	tsFinalizerName := "tcproute.finalizers.smi-controller"
+
+	// examine DeletionTimestamp to determine if object is under deletion
+	if ts.ObjectMeta.DeletionTimestamp.IsZero() {
+		// The object is not being deleted, so if it does not have our finalizer,
+		// then lets add the finalizer and update the object. This is equivalent
+		// registering our finalizer.
+		if !helpers.ContainsString(ts.ObjectMeta.Finalizers, tsFinalizerName) {
+			ts.ObjectMeta.Finalizers = append(ts.ObjectMeta.Finalizers, tsFinalizerName)
+			if err := r.Update(context.Background(), ts); err != nil {
+				return ctrl.Result{}, err
+			}
+		}
+	} else {
+		// The object is being deleted
+		if helpers.ContainsString(ts.ObjectMeta.Finalizers, tsFinalizerName) {
+			// our finalizer is present, so lets handle any external dependency
+			sdk.API().V1Alpha().DeleteTCPRoute(ctx, r.Client, logger, ts)
+
+			// remove our finalizer from the list and update it.
+			ts.ObjectMeta.Finalizers = helpers.RemoveString(ts.ObjectMeta.Finalizers, tsFinalizerName)
+			if err := r.Update(context.Background(), ts); err != nil {
+				return ctrl.Result{}, err
+			}
+		}
+
+		// Stop reconciliation as the item is being deleted
+		return ctrl.Result{}, nil
+	}
+
+	return sdk.API().V1Alpha().UpsertTCPRoute(ctx, r.Client, logger, ts)
 }
 
 // SetupWithManager sets up the controller with the Manager.

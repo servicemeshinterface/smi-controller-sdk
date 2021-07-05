@@ -54,8 +54,8 @@ func TestAPIs(t *testing.T) {
 	setupSuite(t)
 
 	// execute tests
-	t.Run("Create Traffic Split", testCreateTrafficSplit)
-	t.Run("Delete Traffic Split", testDeleteTrafficSplit)
+	t.Run("Create TrafficSplit", testCreateTrafficSplit)
+	t.Run("Delete TrafficSplit", testDeleteTrafficSplit)
 }
 
 func setupSuite(t *testing.T) {

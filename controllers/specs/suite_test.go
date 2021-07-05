@@ -22,10 +22,19 @@ import (
 
 	"github.com/servicemeshinterface/smi-controller-sdk/controllers/helpers"
 	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"k8s.io/client-go/rest"
+	"k8s.io/kubectl/pkg/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
+
+	ctrl "sigs.k8s.io/controller-runtime"
+
+	specsv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha1"
+	specsv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha2"
+	specsv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha3"
+	specsv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha4"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -35,6 +44,7 @@ import (
 var cfg *rest.Config
 var k8sClient client.Client
 var testEnv *envtest.Environment
+var mockAPI *helpers.MockAPI
 
 func TestAPIs(t *testing.T) {
 	t.Cleanup(func() {
@@ -45,19 +55,81 @@ func TestAPIs(t *testing.T) {
 	setupSuite(t)
 
 	// execute tests
-	//t.Run("Create Traffic Split", testCreateTrafficSplit)
-	//t.Run("Delete Traffic Split", testDeleteTrafficSplit)
+	t.Run("Create HTTPRouteGroup", testCreateHTTPRouteGroup)
+	t.Run("Delete HTTPRouteGroup", testDeleteHTTProuteGroup)
+
+	t.Run("Create TCPRoute", testCreateTCPRoute)
+	t.Run("Delete TCPRoute", testDeleteTCPRoute)
+
+	t.Run("Create UDPRoute", testCreateUDPRoute)
+	t.Run("Delete UDPRoute", testDeleteUDPRoute)
 }
 
 func setupSuite(t *testing.T) {
-	//logf.SetLogger(zap.LoggerTo(GinkgoWriter, true))
 	testEnv = &envtest.Environment{
 		CRDDirectoryPaths:        []string{filepath.Join("..", "..", "config", "crd", "bases")},
 		ErrorIfCRDPathMissing:    true,
 		AttachControlPlaneOutput: false,
 	}
 
+	var err error
+	cfg, err = testEnv.Start()
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	err = specsv1alpha1.AddToScheme(scheme.Scheme)
+	require.NoError(t, err)
+
+	err = specsv1alpha2.AddToScheme(scheme.Scheme)
+	require.NoError(t, err)
+
+	err = specsv1alpha3.AddToScheme(scheme.Scheme)
+	require.NoError(t, err)
+
+	err = specsv1alpha4.AddToScheme(scheme.Scheme)
+	require.NoError(t, err)
+
+	// +kubebuilder:scaffold:scheme
+
+	k8sManager, err := ctrl.NewManager(cfg, ctrl.Options{
+		Scheme: scheme.Scheme,
+	})
+	require.NoError(t, err)
+
+	err = (&HTTPRouteGroupReconciler{
+		Client: k8sManager.GetClient(),
+	}).SetupWithManager(k8sManager)
+	require.NoError(t, err)
+
+	err = (&TCPRouteReconciler{
+		Client: k8sManager.GetClient(),
+	}).SetupWithManager(k8sManager)
+	require.NoError(t, err)
+
+	err = (&UDPRouteReconciler{
+		Client: k8sManager.GetClient(),
+	}).SetupWithManager(k8sManager)
+	require.NoError(t, err)
+
+	go func() {
+		err = k8sManager.Start(ctrl.SetupSignalHandler())
+		require.NoError(t, err)
+	}()
+
+	k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
+	require.NoError(t, err)
+	require.NotNil(t, k8sClient)
+
 	// create the mocks and register it with the SDK
-	mock := &helpers.MockAPI{}
-	sdk.API().RegisterV1Alpha(mock)
+	mockAPI = &helpers.MockAPI{}
+	sdk.API().RegisterV1Alpha(mockAPI)
+
+	mockAPI.On("UpsertHTTPRouteGroup", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
+	mockAPI.On("DeleteHTTPRouteGroup", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
+
+	mockAPI.On("UpsertTCPRoute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
+	mockAPI.On("DeleteTCPRoute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
+
+	mockAPI.On("UpsertUDPRoute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
+	mockAPI.On("DeleteUDPRoute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
 }

@@ -72,6 +72,8 @@ func (r *TrafficTargetReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 			if err := r.Update(context.Background(), tt); err != nil {
 				return ctrl.Result{}, err
 			}
+
+			return ctrl.Result{}, nil
 		}
 	} else {
 		// The object is being deleted
