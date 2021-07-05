@@ -41,7 +41,7 @@ Feature: split.smi-spec.io
     ```
     Then I expect "UpsertTrafficSplit" to be called 1 time
   
-  @split
+  @split @alpha3
   Scenario: Apply alpha3 TrafficSplit
     Given the server is running
     When I create the following resource
@@ -79,7 +79,7 @@ Feature: split.smi-spec.io
           methods: ["*"]
     ```
     Then I expect "UpsertTrafficSplit" to be called 1 time
-    Then I expect "HTTPRouteGroup" to be called 1 time
+    Then I expect "UpsertHTTPRouteGroup" to be called 1 time
   
   @split @alpha4
   Scenario: Apply alpha4 TrafficSplit
@@ -121,4 +121,4 @@ Feature: split.smi-spec.io
           methods: ["*"]
     ```
     Then I expect "UpsertTrafficSplit" to be called 1 time
-    Then I expect "HTTPRouteGroup" to be called 1 time
+    Then I expect "UpsertHTTPRouteGroup" to be called 1 time
