@@ -3,6 +3,7 @@ Feature: split.smi-spec.io
   As a developer
   I need to ensure the specification is accepted by the server
 
+  @split
   Scenario: Apply alpha1 TrafficSplit
     Given the server is running
     When I create the following resource
@@ -21,6 +22,7 @@ Feature: split.smi-spec.io
     ```
     Then I expect "UpsertTrafficSplit" to be called 1 time
   
+  @split
   Scenario: Apply alpha2 TrafficSplit
     Given the server is running
     When I create the following resource
@@ -39,6 +41,7 @@ Feature: split.smi-spec.io
     ```
     Then I expect "UpsertTrafficSplit" to be called 1 time
   
+  @split
   Scenario: Apply alpha3 TrafficSplit
     Given the server is running
     When I create the following resource
@@ -52,6 +55,7 @@ Feature: split.smi-spec.io
         matches:
         - kind: HTTPRouteGroup
           name: ab-test
+          apiGroup: specs.smi-spec.io
         backends:
         - service: website-v1
           weight: 0
@@ -77,6 +81,7 @@ Feature: split.smi-spec.io
     Then I expect "UpsertTrafficSplit" to be called 1 time
     Then I expect "HTTPRouteGroup" to be called 1 time
   
+  @split @alpha4
   Scenario: Apply alpha4 TrafficSplit
     Given the server is running
     When I create the following resource
@@ -90,6 +95,7 @@ Feature: split.smi-spec.io
         matches:
         - kind: HTTPRouteGroup
           name: ab-test
+          apiGroup: specs.smi-spec.io
         backends:
         - service: website-v1
           weight: 0

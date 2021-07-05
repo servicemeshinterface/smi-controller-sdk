@@ -3,6 +3,7 @@ Feature: specs.smi-spec.io
   As a developer
   I need to ensure the specification is accepted by the server
 
+  @specs @HTTPRouteGroup
   Scenario: Apply alpha1 HTTPRouteGroup
     Given the server is running
     When I create the following resource
@@ -22,6 +23,7 @@ Feature: specs.smi-spec.io
     ```
     Then I expect "UpsertHTTPRouteGroup" to be called 1 time
   
+  @specs @HTTPRouteGroup
   Scenario: Apply alpha2 HTTPRouteGroup
     Given the server is running
     When I create the following resource
@@ -41,6 +43,7 @@ Feature: specs.smi-spec.io
     ```
     Then I expect "UpsertHTTPRouteGroup" to be called 1 time
     
+  @specs @HTTPRouteGroup
   Scenario: Apply alpha3 HTTPRouteGroup
     Given the server is running
     When I create the following resource
@@ -61,6 +64,7 @@ Feature: specs.smi-spec.io
     ```
     Then I expect "UpsertHTTPRouteGroup" to be called 1 time
   
+  @specs @HTTPRouteGroup
   Scenario: Apply alpha4 HTTPRouteGroup
     Given the server is running
     When I create the following resource
@@ -84,6 +88,7 @@ Feature: specs.smi-spec.io
     Then I expect "UpsertHTTPRouteGroup" to be called 1 time
 
 
+  @specs @TPCRoute
   Scenario: Apply alpha1 TCPRoute
     Given the server is running
     When I create the following resource
@@ -95,6 +100,7 @@ Feature: specs.smi-spec.io
     ```
     Then I expect "UpsertTCPRoute" to be called 1 time
   
+  @specs @TPCRoute
   Scenario: Apply alpha2 TCPRoute
     Given the server is running
     When I create the following resource
@@ -106,6 +112,7 @@ Feature: specs.smi-spec.io
     ```
     Then I expect "UpsertTCPRoute" to be called 1 time
   
+  @specs @TPCRoute
   Scenario: Apply alpha3 TCPRoute
     Given the server is running
     When I create the following resource
@@ -118,6 +125,7 @@ Feature: specs.smi-spec.io
     ```
     Then I expect "UpsertTCPRoute" to be called 1 time
   
+  @specs @TPCRoute
   Scenario: Apply alpha4 TCPRoute
     Given the server is running
     When I create the following resource
@@ -135,6 +143,7 @@ Feature: specs.smi-spec.io
     Then I expect "UpsertTCPRoute" to be called 1 time
   
   
+  @specs @UDPRoute
   Scenario: Apply alpha4 UDPRoute
     Given the server is running
     When I create the following resource
