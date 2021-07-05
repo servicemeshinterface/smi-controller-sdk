@@ -1,7 +1,15 @@
 apiVersion: specs.smi-spec.io/v1alpha4
 kind: HTTPRouteGroup
 metadata:
-  name: httproutegroup-sample
+  name: the-routes
 spec:
-  # Add fields here
-  foo: bar
+  matches:
+  - name: metrics
+    pathRegex: "/metrics"
+    methods:
+    - GET
+    headers:
+      x-debug: 1
+  - name: health
+    pathRegex: "/ping"
+    methods: ["*"]

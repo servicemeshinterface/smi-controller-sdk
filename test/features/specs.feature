@@ -3,50 +3,150 @@ Feature: specs.smi-spec.io
   As a developer
   I need to ensure the specification is accepted by the server
 
+  Scenario: Apply alpha1 HTTPRouteGroup
+    Given the server is running
+    When I create the following resource
+    ```
+      apiVersion: specs.smi-spec.io/v1alpha1
+      kind: HTTPRouteGroup
+      metadata:
+        name: the-routes
+      matches:
+      - name: metrics
+        pathRegex: "/metrics"
+        methods:
+        - GET
+      - name: health
+        pathRegex: "/ping"
+        methods: ["*"]
+    ```
+    Then I expect "UpsertHTTPRouteGroup" to be called 1 time
+  
+  Scenario: Apply alpha2 HTTPRouteGroup
+    Given the server is running
+    When I create the following resource
+    ```
+      apiVersion: specs.smi-spec.io/v1alpha2
+      kind: HTTPRouteGroup
+      metadata:
+        name: the-routes
+      matches:
+      - name: metrics
+        pathRegex: "/metrics"
+        methods:
+        - GET
+      - name: health
+        pathRegex: "/ping"
+        methods: ["*"]
+    ```
+    Then I expect "UpsertHTTPRouteGroup" to be called 1 time
+    
+  Scenario: Apply alpha3 HTTPRouteGroup
+    Given the server is running
+    When I create the following resource
+    ```
+      apiVersion: specs.smi-spec.io/v1alpha3
+      kind: HTTPRouteGroup
+      metadata:
+        name: the-routes
+      spec:
+        matches:
+        - name: metrics
+          pathRegex: "/metrics"
+          methods:
+          - GET
+        - name: health
+          pathRegex: "/ping"
+          methods: ["*"]
+    ```
+    Then I expect "UpsertHTTPRouteGroup" to be called 1 time
+  
+  Scenario: Apply alpha4 HTTPRouteGroup
+    Given the server is running
+    When I create the following resource
+    ```
+      apiVersion: specs.smi-spec.io/v1alpha4
+      kind: HTTPRouteGroup
+      metadata:
+        name: the-routes
+      spec:
+        matches:
+        - name: metrics
+          pathRegex: "/metrics"
+          methods:
+          - GET
+          headers:
+            x-debug: "1"
+        - name: health
+          pathRegex: "/ping"
+          methods: ["*"]
+    ```
+    Then I expect "UpsertHTTPRouteGroup" to be called 1 time
 
-#  Scenario: Apply alphav4 HTTPRouteGroup
-#    Given the server is running
-#    When I create an "alphav4" HTTPRouteGroup
-#    Then I expect the controller to have created 1 "HTTPRouteGroup"
-#
-#  Scenario: Apply alphav3 HTTPRouteGroup
-#    Given the server is running
-#    When I create an "alphav3" HTTPRouteGroup
-#    Then I expect the controller to have created 1 "HTTPRouteGroup"
-#  
-#  Scenario: Apply alphav2 HTTPRouteGroup
-#    Given the server is running
-#    When I create an "alphav2" HTTPRouteGroup
-#    Then I expect the controller to have created 1 "HTTPRouteGroup"
-#  
-#  Scenario: Apply alphav1 HTTPRouteGroup
-#    Given the server is running
-#    When I create an "alphav1" HTTPRouteGroup
-#    Then I expect the controller to have created 1 "HTTPRouteGroup"
-#
-#
-#  Scenario: Apply alphav4 TCPRoute
-#    Given the server is running
-#    When I create an "alphav4" TCPRoute
-#    Then I expect the controller to have created 1 "TCPRoute"
-#
-#  Scenario: Apply alphav3 TCPRoute
-#    Given the server is running
-#    When I create an "alphav3" TCPRoute
-#    Then I expect the controller to have created 1 "TCPRoute"
-#  
-#  Scenario: Apply alphav2 TCPRoute
-#    Given the server is running
-#    When I create an "alphav2" TCPRoute
-#    Then I expect the controller to have created 1 "TCPRoute"
-#  
-#  Scenario: Apply alphav1 TCPRoute
-#    Given the server is running
-#    When I create an "alphav1" TCPRoute
-#    Then I expect the controller to have created 1 "TCPRoute"
-#
-#
-#  Scenario: Apply alphav4 UDPRoute
-#    Given the server is running
-#    When I create an "alphav4" UDPRoute
-#    Then I expect the controller to have created 1 "UDPRoute"
+
+  Scenario: Apply alpha1 TCPRoute
+    Given the server is running
+    When I create the following resource
+    ```
+      apiVersion: specs.smi-spec.io/v1alpha1
+      kind: TCPRoute
+      metadata:
+        name: tcp-route
+    ```
+    Then I expect "UpsertTCPRoute" to be called 1 time
+  
+  Scenario: Apply alpha2 TCPRoute
+    Given the server is running
+    When I create the following resource
+    ```
+      apiVersion: specs.smi-spec.io/v1alpha2
+      kind: TCPRoute
+      metadata:
+        name: tcp-route
+    ```
+    Then I expect "UpsertTCPRoute" to be called 1 time
+  
+  Scenario: Apply alpha3 TCPRoute
+    Given the server is running
+    When I create the following resource
+    ```
+      apiVersion: specs.smi-spec.io/v1alpha3
+      kind: TCPRoute
+      metadata:
+        name: tcp-route
+      spec: {}
+    ```
+    Then I expect "UpsertTCPRoute" to be called 1 time
+  
+  Scenario: Apply alpha4 TCPRoute
+    Given the server is running
+    When I create the following resource
+    ```
+      apiVersion: specs.smi-spec.io/v1alpha4
+      kind: TCPRoute
+      metadata:
+        name: the-routes
+      spec:
+        matches:
+          ports:
+          - 3306
+          - 6446
+    ```
+    Then I expect "UpsertTCPRoute" to be called 1 time
+  
+  
+  Scenario: Apply alpha4 UDPRoute
+    Given the server is running
+    When I create the following resource
+    ```
+      apiVersion: specs.smi-spec.io/v1alpha4
+      kind: UDPRoute
+      metadata:
+        name: the-routes
+      spec:
+        matches:
+          ports:
+          - 989
+          - 990
+    ```
+    Then I expect "UpsertUDPRoute" to be called 1 time

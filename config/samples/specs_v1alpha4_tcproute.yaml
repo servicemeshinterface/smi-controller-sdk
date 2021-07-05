@@ -1,7 +1,9 @@
 apiVersion: specs.smi-spec.io/v1alpha4
-kind: TCPRoute
-metadata:
-  name: tcproute-sample
-spec:
-  # Add fields here
-  foo: bar
+ kind: TCPRoute
+ metadata:
+   name: the-routes
+ spec:
+   matches:
+     ports:
+     - 3306
+     - 6446

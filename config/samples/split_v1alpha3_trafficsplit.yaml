@@ -12,6 +12,7 @@ spec:
     weight: 0
   - service: website-v2
     weight: 100
+
 ---
 kind: HTTPRouteGroup
 metadata:

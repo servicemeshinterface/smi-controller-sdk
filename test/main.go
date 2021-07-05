@@ -14,9 +14,6 @@ import (
 	"github.com/cucumber/messages-go/v10"
 	"github.com/go-logr/logr"
 	"github.com/hashicorp/go-hclog"
-	accessv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha1"
-	accessv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha2"
-	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
 	"github.com/servicemeshinterface/smi-controller-sdk/controllers/helpers"
 	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
 	"github.com/servicemeshinterface/smi-controller-sdk/sdk/controller"
@@ -28,6 +25,20 @@ import (
 	"k8s.io/kubectl/pkg/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	accessv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha1"
+	accessv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha2"
+	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
+
+	specsv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha1"
+	specsv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha2"
+	specsv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha3"
+	specsv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha4"
+
+	splitv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha1"
+	splitv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha2"
+	splitv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha3"
+	splitv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4"
 )
 
 var opts = &godog.Options{
@@ -39,9 +50,6 @@ var mockAPI *helpers.MockAPI
 var logger logr.Logger
 var k8sClient clients.Kubernetes
 var config controller.Config
-
-// store a reference to any objects submitted to the controller for later cleanup
-var crds []interface{}
 
 func main() {
 	godog.BindFlags("godog.", flag.CommandLine, opts)
@@ -88,11 +96,6 @@ func initializeSuite(ctx *godog.TestSuiteContext) {
 		panic(err)
 	}
 
-	// create and start the controller
-	setupMockAPI()
-
-	sdk.API().RegisterV1Alpha(mockAPI)
-
 	config = controller.DefaultConfig()
 	config.WebhooksEnabled = true
 	config.Logger = logger
@@ -101,7 +104,9 @@ func initializeSuite(ctx *godog.TestSuiteContext) {
 }
 
 func initializeScenario(ctx *godog.ScenarioContext) {
-	crds = []interface{}{}
+	// setup the MockAPI
+	setupMockAPI()
+	sdk.API().RegisterV1Alpha(mockAPI)
 
 	ctx.Step(`^the server is running$`, theServerIsRunning)
 	ctx.Step(`^I create the following resource$`, iCreateTheFollowingResource)
@@ -154,6 +159,110 @@ func cleanupResources() {
 
 	if err != nil {
 		fmt.Println("Error removing v1 TrafficTargets", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&specsv1alpha4.HTTPRouteGroup{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v4 HTTPRouteGroup", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&specsv1alpha3.HTTPRouteGroup{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v3 HTTPRouteGroup", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&specsv1alpha2.HTTPRouteGroup{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v2 HTTPRouteGroup", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&specsv1alpha1.HTTPRouteGroup{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v1 HTTPRouteGroup", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&specsv1alpha4.TCPRoute{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v4 TCPRoute", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&specsv1alpha3.TCPRoute{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v3 TCPRoute", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&specsv1alpha2.TCPRoute{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v2 TCPRoute", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&specsv1alpha1.TCPRoute{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v1 TCPRoute", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&specsv1alpha4.UDPRoute{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v1 UDPRoute", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&splitv1alpha1.TrafficSplit{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v1 TrafficSplit", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&splitv1alpha2.TrafficSplit{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v2 TrafficSplit", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&splitv1alpha3.TrafficSplit{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v3 TrafficSplit", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&splitv1alpha4.TrafficSplit{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v4 TrafficSplit", err)
 	}
 }
 

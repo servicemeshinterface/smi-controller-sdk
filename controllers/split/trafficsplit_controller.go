@@ -72,6 +72,8 @@ func (r *TrafficSplitReconciler) Reconcile(ctx context.Context, req ctrl.Request
 			if err := r.Update(context.Background(), ts); err != nil {
 				return ctrl.Result{}, err
 			}
+
+			return ctrl.Result{}, nil
 		}
 	} else {
 		// The object is being deleted
