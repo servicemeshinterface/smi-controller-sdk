@@ -60,13 +60,19 @@ Feature: split.smi-spec.io
     ```
     And I create the following resource
     ```
+      apiVersion: specs.smi-spec.io/v1alpha3
       kind: HTTPRouteGroup
       metadata:
         name: ab-test
-      matches:
-      - name: firefox-users
-        headers:
-        - user-agent: ".*Firefox.*"
+      spec:
+        matches:
+        - name: metrics
+          pathRegex: "/metrics"
+          methods:
+          - GET
+        - name: health
+          pathRegex: "/ping"
+          methods: ["*"]
     ```
     Then I expect "UpsertTrafficSplit" to be called 1 time
     Then I expect "HTTPRouteGroup" to be called 1 time
@@ -92,13 +98,21 @@ Feature: split.smi-spec.io
     ```
     And I create the following resource
     ```
+      apiVersion: specs.smi-spec.io/v1alpha4
       kind: HTTPRouteGroup
       metadata:
         name: ab-test
-      matches:
-      - name: firefox-users
-        headers:
-        - user-agent: ".*Firefox.*"
+      spec:
+        matches:
+        - name: metrics
+          pathRegex: "/metrics"
+          methods:
+          - GET
+          headers:
+            x-debug: "1"
+        - name: health
+          pathRegex: "/ping"
+          methods: ["*"]
     ```
     Then I expect "UpsertTrafficSplit" to be called 1 time
     Then I expect "HTTPRouteGroup" to be called 1 time
