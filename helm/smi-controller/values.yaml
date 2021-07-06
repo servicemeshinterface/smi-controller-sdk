@@ -62,6 +62,7 @@ controller:
 webhook:
   type: ClusterIP
   port: 443
+  service: smi-webhook
 
   # Allows adding additional DNS Names to the cert generated
   # for the webhook
