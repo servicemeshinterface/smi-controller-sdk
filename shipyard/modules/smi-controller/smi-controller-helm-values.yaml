@@ -1,8 +1,0 @@
-controller:
-  enabled: false
-webhook:
-  enabled: false # Shipyard will create the service pointing at the local machine
-  service: smi-webhook
-  port: 9443
-  additionalDNSNames:
-    - smi-webhook.shipyard.svc
