@@ -2,11 +2,27 @@ DOCKER_REPO=nicholasjackson/smi-controller-example
 DOCKER_VERSION=0.1.0
 SHELL := /bin/bash
 
-build_docker:
-	docker build -t ${DOCKER_REPO}:${DOCKER_VERSION} .
+build_docker_setup:
+	docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+	docker buildx create --name multi
+	docker buildx use multi
+	docker buildx inspect --bootstrap
 
-push_docker:
-	docker push ${DOCKER_REPO}:${DOCKER_VERSION}
+build_docker_local: build_docker_setup
+	docker buildx build --platform linux/amd64 \
+		-t ${DOCKER_REPO}:${DOCKER_VERSION} \
+		-f ./Dockerfile \
+		. \
+		--load
+	docker buildx rm multi || true
+
+build_docker_push: build_docker_setup
+	docker buildx build --platform linux/arm64,linux/amd64 \
+		-t ${DOCKER_REPO}:${DOCKER_VERSION} \
+		-f ./Dockerfile \
+		. \
+		--push
+	docker buildx rm multi || true
 
 generate_helm: manifests
 # First generate the Helm specific kustomize config that creates the RBAC and CRDs
@@ -127,7 +143,6 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build config/default | kubectl delete -f -
-
 
 CONTROLLER_GEN = $(shell pwd)/bin/controller-gen
 controller-gen: ## Download controller-gen locally if necessary.
