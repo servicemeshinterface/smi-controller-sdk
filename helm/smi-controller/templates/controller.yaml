@@ -41,19 +41,20 @@ spec:
             - name: http
               containerPort: 9443
               protocol: TCP
+            - name: health
+              containerPort: 9444
+              protocol: TCP
           volumeMounts:
             - name: tls-secret
               mountPath: /tmp/k8s-webhook-server/serving-certs
           livenessProbe:
             httpGet:
               path: /healthz
-              scheme: HTTPS
-              port: http
+              port: health
           readinessProbe:
             httpGet:
               path: /readyz
-              scheme: HTTPS
-              port: http
+              port: health
           resources:
             {{- toYaml .Values.controller.resources | nindent 12 }}
           env:
