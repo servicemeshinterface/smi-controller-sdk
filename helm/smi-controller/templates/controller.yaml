@@ -45,10 +45,14 @@ spec:
             - name: tls-secret
               mountPath: /tmp/k8s-webhook-server/serving-certs
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /healthz
+              scheme: HTTPS
               port: http
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /readyz
+              scheme: HTTPS
               port: http
           resources:
             {{- toYaml .Values.controller.resources | nindent 12 }}

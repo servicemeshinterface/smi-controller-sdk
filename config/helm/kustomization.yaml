@@ -28,3 +28,9 @@ patches:
 - path: crd-patch.yaml
   target:
     kind: CustomResourceDefinition
+- path: rbac-cluster-role-patch.yaml
+  target:
+    kind: ClusterRoleBinding
+- path: rbac-role-patch.yaml
+  target:
+    kind: RoleBinding

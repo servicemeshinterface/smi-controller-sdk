@@ -30,7 +30,13 @@ variable "smi_controller_helm_chart" {
   default = "${file_dir()}/../helm/smi-controller"
 }
 
+variable "install_helm_chart" {
+  default = true
+}
+
 module "smi-controller" {
+  disabled = (var.install_helm_chart == false)
+
   #source = "/home/nicj/go/src/github.com/shipyard-run/blueprints/modules/kubernetes-smi-controller"
   source = "github.com/shipyard-run/blueprints/modules/kubernetes-smi-controller"
 }

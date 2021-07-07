@@ -9,5 +9,5 @@ roleRef:
   name: smi-controller-leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: smi-controller-controller-manager
-  namespace: '{{ .Release.Namespace }}'
+  name: '{{ include "smi-controller.serviceAccountName" . }}'
+  namespace: '{{ default .Release.Namespace }}'
