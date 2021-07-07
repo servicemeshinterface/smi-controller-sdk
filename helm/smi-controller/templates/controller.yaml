@@ -69,5 +69,5 @@ spec:
       volumes:
         - name: tls-secret
           secret:
-            secretName: controller-webhook-certificate
+            secretName: {{include "smi-controller.fullname" .}}-webhook-certificate
 {{- end }}
