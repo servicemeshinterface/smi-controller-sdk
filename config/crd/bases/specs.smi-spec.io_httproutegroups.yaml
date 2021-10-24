@@ -13,6 +13,8 @@ spec:
     kind: HTTPRouteGroup
     listKind: HTTPRouteGroupList
     plural: httproutegroups
+    shortNames:
+    - htr
     singular: httproutegroup
   scope: Namespaced
   versions:

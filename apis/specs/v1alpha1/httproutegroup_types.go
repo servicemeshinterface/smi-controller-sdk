@@ -72,6 +72,7 @@ type HTTPRouteGroupStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:shortName=htr
 
 // HTTPRouteGroup is the Schema for the httproutegroups API
 type HTTPRouteGroup struct {

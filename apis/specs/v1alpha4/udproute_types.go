@@ -50,6 +50,7 @@ type UDPRouteStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:storageversion
+//+kubebuilder:resource:shortName=ur
 
 // UDPRoute is the Schema for the udproutes API
 type UDPRoute struct {

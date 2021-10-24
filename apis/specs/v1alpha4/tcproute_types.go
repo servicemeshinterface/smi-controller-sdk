@@ -50,6 +50,7 @@ type TCPRouteStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:storageversion
+//+kubebuilder:resource:shortName=tr
 
 // TCPRoute is the Schema for the tcproutes API
 type TCPRoute struct {
