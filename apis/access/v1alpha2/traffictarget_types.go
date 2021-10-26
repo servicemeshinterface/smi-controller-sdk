@@ -75,6 +75,7 @@ type TrafficTargetStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:shortName=tt
 
 // TrafficTarget associates a set of traffic definitions (rules) with a service identity which is allocated to a group of pods.
 // Access is controlled via referenced TrafficSpecs and by a list of source service identities.

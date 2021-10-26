@@ -59,6 +59,7 @@ type IdentityBindingSubject struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:shortName=tt
 
 // TrafficTarget is the Schema for the traffictargets API
 // TrafficTarget associates a set of traffic definitions (rules) with a service identity which is allocated to a group of pods.

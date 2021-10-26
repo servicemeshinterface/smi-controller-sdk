@@ -86,6 +86,7 @@ type HTTPRouteGroupStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:shortName=htr
 
 // HTTPRouteGroup is the Schema for the httproutegroups API
 // It is used to describe HTTP/1 and HTTP/2 traffic.
