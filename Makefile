@@ -24,6 +24,27 @@ build_docker_push: build_docker_setup
 		--push
 	docker buildx rm multi || true
 
+generate_helm_darwin: manifests
+# First generate the Helm specific kustomize config that creates the RBAC and CRDs
+	kustomize build ./config/helm -o ./helm/smi-controller/templates
+
+# Replace port with helm syntax, kustomize rejects Helm syntax not in quotes and this field is an integer
+	sed -i '' -e 's/port: 443/port: {{ .Values.webhook.port }}/' ./helm/smi-controller/templates/apiextensions.k8s.io_v1_customresourcedefinition_*.yaml
+
+# Delete extra files
+	rm ./helm/smi-controller/templates/v1_service_smi-controller-controller-manager-metrics-service.yaml
+	rm ./helm/smi-controller/templates/v1_serviceaccount_smi-controller-controller-manager.yaml
+
+# Now package the Helm chart into a tarball
+	helm package ./helm/smi-controller
+
+# Move it to the ./docs folder used to serve Github Pages
+	mv smi-controller-${DOCKER_VERSION}.tgz ./docs/
+
+# Generate the index
+	cd ./docs && helm repo index .
+
+
 generate_helm: manifests
 # First generate the Helm specific kustomize config that creates the RBAC and CRDs
 	kustomize build ./config/helm -o ./helm/smi-controller/templates
