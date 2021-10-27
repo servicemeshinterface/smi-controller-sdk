@@ -1,6 +1,7 @@
 DOCKER_REPO=nicholasjackson/smi-controller-example
 DOCKER_VERSION=0.1.0
 SHELL := /bin/bash
+UNAME := $(shell uname)
 
 build_docker_setup:
 	docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
@@ -28,8 +29,10 @@ generate_helm: manifests
 # First generate the Helm specific kustomize config that creates the RBAC and CRDs
 	kustomize build ./config/helm -o ./helm/smi-controller/templates
 
+# Pick the correct sed -i argument based on OS (Darwin uses BSD sed, not GNU sed)
 # Replace port with helm syntax, kustomize rejects Helm syntax not in quotes and this field is an integer
-	sed -i 's/port: 443/port: {{ .Values.webhook.port }}/' ./helm/smi-controller/templates/apiextensions.k8s.io_v1_customresourcedefinition_*.yaml
+	sedi=(-i) && [ "$(UNAME)" == "Darwin" ] && sedi=(-i '') ; \
+	sed "$${sedi[@]}" -e 's/port: 443/port: {{ .Values.webhook.port }}/' ./helm/smi-controller/templates/apiextensions.k8s.io_v1_customresourcedefinition_*.yaml
 
 # Delete extra files
 	rm ./helm/smi-controller/templates/v1_service_smi-controller-controller-manager-metrics-service.yaml
