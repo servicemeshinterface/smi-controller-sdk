@@ -3,12 +3,12 @@ entries:
   smi-controller:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2021-10-26T13:01:07.587164-05:00"
+    created: "2021-10-27T10:01:52.386136-05:00"
     description: A Helm chart for installing the SMI Controller for Kubernetes
-    digest: 336c910965afcde54caeba9c66400999dff8578beef826e236dc17d24b69d011
+    digest: 05acf92c7bef959c26c2f7e8e71645e4fea9c9ca18d1af138bbfae54ecbfef4a
     name: smi-controller
     type: application
     urls:
     - smi-controller-0.1.0.tgz
     version: 0.1.0
-generated: "2021-10-26T13:01:07.585061-05:00"
+generated: "2021-10-27T10:01:52.385317-05:00"
