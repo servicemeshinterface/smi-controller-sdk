@@ -1,5 +1,6 @@
 DOCKER_REPO=nicholasjackson/smi-controller-example
 DOCKER_VERSION=0.1.0
+HELM_VERSION=0.2.0
 SHELL := /bin/bash
 UNAME := $(shell uname)
 
@@ -42,7 +43,7 @@ generate_helm: manifests
 	helm package ./helm/smi-controller
 
 # Move it to the ./docs folder used to serve Github Pages
-	mv smi-controller-${DOCKER_VERSION}.tgz ./docs/
+	mv smi-controller-${HELM_VERSION}.tgz ./docs/
 
 # Generate the index
 	cd ./docs && helm repo index .
