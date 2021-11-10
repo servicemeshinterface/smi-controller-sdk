@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: smi-controller-webhook-certificate
   dnsNames:
-  - {{ printf "%s.%s.svc" ( include "smi-controller.fullname" . ) .Release.Namespace  | quote }}
+  - {{ printf "%s.%s.svc" (default (include "smi-controller.fullname" .) .Values.webhook.service) .Release.Namespace  | quote }}
   {{- range $dnsName := .Values.webhook.additionalDNSNames }}
   - {{ $dnsName | quote }}
   {{- end }}

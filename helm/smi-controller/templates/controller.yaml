@@ -31,12 +31,14 @@ spec:
       automountServiceAccountToken: true
       securityContext:
         {{- toYaml .Values.controller.podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- toYaml .Values.controller.additional_init_containers | nindent 12 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.controller.securityContext | nindent 12 }}
-          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+          image: "{{ .Values.controller.container_config.image.repository }}:{{ .Values.controller.container_config.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.controller.container_config.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 9443
@@ -47,6 +49,9 @@ spec:
           volumeMounts:
             - name: tls-secret
               mountPath: /tmp/k8s-webhook-server/serving-certs
+            {{- if .Values.controller.container_config.volumeMounts }}
+            {{- toYaml .Values.controller.container_config.volumeMounts | nindent 12 }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /healthz
@@ -56,9 +61,9 @@ spec:
               path: /readyz
               port: health
           resources:
-            {{- toYaml .Values.controller.resources | nindent 12 }}
+            {{- toYaml .Values.controller.container_config.resources | nindent 12 }}
           env:
-            {{- toYaml .Values.controller.env | nindent 12 }}
+            {{- toYaml .Values.controller.container_config.env | nindent 12 }}
       {{- with .Values.controller.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -75,4 +80,7 @@ spec:
         - name: tls-secret
           secret:
             secretName: {{include "smi-controller.fullname" .}}-webhook-certificate
+        {{- if .Values.controller.additional_volumes }}
+        {{- toYaml .Values.controller.additional_volumes | nindent 8 }}
+        {{- end }}
 {{- end }}

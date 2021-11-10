@@ -8,18 +8,57 @@ replicaCount: 1
 controller:
   enabled: "true"
 
-  image:
-    repository: nicholasjackson/smi-controller-example
-    pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: "0.1.0"
+  container_config:
+    image:
+      repository: nicholasjackson/smi-controller-example
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "0.1.0"
   
-  # Additional environment variables to add to the controller
-  # deployment
-  # env:
-  # - name: MYENV
-  #   value: myvalue
-  env: []
+    env: []
+      # Additional environment variables to add to the controller
+      # deployment
+      # - name: MYENV
+      #   value: myvalue
+  
+    volumeMounts: []
+      # Additional volume mounts to add to the container can be used to
+      # mount configuration or certificates needed by the specific controller implementation.
+      # - name: consul-ca
+      #   mountPath: /tmp/consul/ca
+
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+  additional_volumes: []
+    # Additional volumes to add to the controller pod
+    # - name: consul-ca
+    #   secret:
+    #     secretName: consul-ca-cert
+
+  additional-init-containers: []
+    # Add additional init containers to the controller pod
+    # - command:
+    #   - /bin/sh
+    #   - -ec
+    #   - |
+    #     consul-k8s get-consul-client-ca \
+    #       -output-file=/consul/tls/client/ca/tls.crt \
+    #       -server-addr=consul-server \
+    #       -server-port=8501 \
+    #       -ca-file=/consul/tls/ca/tls.crt
+    #   image: hashicorp/consul-k8s:0.25.0
+    #   imagePullPolicy: IfNotPresent
+    #   name: get-auto-encrypt-client-ca
 
   podAnnotations: {}
 
@@ -34,18 +73,6 @@ controller:
     # runAsNonRoot: true
     # runAsUser: 1000
 
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-  
   autoscaling:
     enabled: false
     minReplicas: 1
