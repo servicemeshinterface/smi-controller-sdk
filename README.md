@@ -140,7 +140,7 @@ $ kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/rel
 
 $ helm repo add jetstack https://charts.jetstack.io
 
-$ helm install --name my-release --namespace cert-manager jetstack/cert-manager
+$ helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace
 ```
 
 You can then install the example using the helm chart:
