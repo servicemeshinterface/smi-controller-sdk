@@ -35,7 +35,8 @@ type TrafficSplitSpec struct {
 // TrafficSplitBackend defines a backend
 type TrafficSplitBackend struct {
 	Service string `json:"service"`
-	Weight  int    `json:"weight"`
+	// +kubebuilder:validation:Minimum=0
+	Weight int `json:"weight"`
 }
 
 // TrafficSplitStatus defines the observed state of TrafficSplit
