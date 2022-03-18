@@ -48,6 +48,7 @@ type TrafficSplitBackend struct {
 	Service string `json:"service"`
 
 	// Weight defines the traffic split percentage
+	// +kubebuilder:validation:Minimum=0
 	Weight int `json:"weight"`
 }
 
