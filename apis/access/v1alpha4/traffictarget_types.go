@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package v1alpha3
+package v1alpha4
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -51,7 +51,8 @@ type TrafficTargetRule struct {
 
 // IdentityBindingSubject is a Kubernetes objects which should be allowed access to the TrafficTarget
 type IdentityBindingSubject struct {
-	// Kind is the type of Subject to allow ingress (ServiceAccount | Group)
+	// Kind is the type of Subject to allow ingress (ServiceAccount | IdentityBinding)
+	// +kubebuilder:validation:Enum=ServiceAccount;IdentityBinding
 	Kind string `json:"kind"`
 
 	// Name of the Subject, i.e. ServiceAccountName
@@ -70,10 +71,11 @@ type TrafficTargetStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:storageversion
 //+kubebuilder:resource:shortName=tt
 
 // TrafficTarget associates a set of traffic definitions (rules) with a service identity which is allocated to a group of pods.
-// Access is controlled via referenced TrafficSpecs and by a list of source service identities.
+// Access is controlled via referenced TrafficSpecs and by a list of source service identities (e.g. ServiceAccount or IdentityBinding).
 // * If a pod which holds the referenced service identity makes a call to the destination on one of the defined routes then access
 //   will be allowed
 // * Any pod which attempts to connect and is not in the defined list of sources will be denied

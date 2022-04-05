@@ -188,4 +188,25 @@ resources:
   webhooks:
     conversion: true
     webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: access
+  kind: IdentityBinding
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha4
+  version: v1alpha4
+  webhooks:
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: access
+  kind: TrafficTarget
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha4
+  version: v1alpha4
 version: "3"

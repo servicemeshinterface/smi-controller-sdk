@@ -19,57 +19,57 @@ package access
 import (
 	"context"
 
-	"github.com/servicemeshinterface/smi-controller-sdk/controllers/helpers"
-	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	accessv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha4"
+	"github.com/servicemeshinterface/smi-controller-sdk/controllers/helpers"
+	"github.com/servicemeshinterface/smi-controller-sdk/sdk"
 )
 
-// TrafficTargetReconciler reconciles a TrafficTarget object
-type TrafficTargetReconciler struct {
+// IdentityBindingReconciler reconciles a IdentityBinding object
+type IdentityBindingReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=access.smi-spec.io,resources=traffictargets,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=access.smi-spec.io,resources=traffictargets/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=access.smi-spec.io,resources=traffictargets/finalizers,verbs=update
+//+kubebuilder:rbac:groups=access.smi-spec.io,resources=identitybindings,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=access.smi-spec.io,resources=identitybindings/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=access.smi-spec.io,resources=identitybindings/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
 // TODO(user): Modify the Reconcile function to compare the state specified by
-// the TrafficTarget object against the actual cluster state, and then
+// the IdentityBinding object against the actual cluster state, and then
 // perform operations to make the cluster state reflect the state specified by
 // the user.
 //
 // For more details, check Reconcile and its Result here:
-// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
-func (r *TrafficTargetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.11.0/pkg/reconcile
+func (r *IdentityBindingReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx)
 
-	tt := &accessv1alpha4.TrafficTarget{}
-	if err := r.Get(ctx, req.NamespacedName, tt); err != nil {
-		logger.Info("unable to fetch TrafficTarget, most likely deleted")
+	ib := &accessv1alpha4.IdentityBinding{}
+	if err := r.Get(ctx, req.NamespacedName, ib); err != nil {
+		logger.Info("unable to fetch IdentityBinding, most likely deleted")
 		// we'll ignore not-found errors, since they can't be fixed by an immediate
 		// requeue (we'll need to wait for a new notification), and we can get them
 		// on deleted requests.
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	ttFinalizerName := "traffictarget.finalizers.smi-controller"
+	ibFinalizerName := "identitybinding.finalizers.smi-controller"
 
 	// examine DeletionTimestamp to determine if object is under deletion
-	if tt.ObjectMeta.DeletionTimestamp.IsZero() {
+	if ib.ObjectMeta.DeletionTimestamp.IsZero() {
 		// The object is not being deleted, so if it does not have our finalizer,
 		// then lets add the finalizer and update the object. This is equivalent
 		// registering our finalizer.
-		if !helpers.ContainsString(tt.ObjectMeta.Finalizers, ttFinalizerName) {
-			tt.ObjectMeta.Finalizers = append(tt.ObjectMeta.Finalizers, ttFinalizerName)
-			if err := r.Update(context.Background(), tt); err != nil {
+		if !helpers.ContainsString(ib.ObjectMeta.Finalizers, ibFinalizerName) {
+			ib.ObjectMeta.Finalizers = append(ib.ObjectMeta.Finalizers, ibFinalizerName)
+			if err := r.Update(context.Background(), ib); err != nil {
 				return ctrl.Result{}, err
 			}
 
@@ -77,13 +77,13 @@ func (r *TrafficTargetReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		}
 	} else {
 		// The object is being deleted
-		if helpers.ContainsString(tt.ObjectMeta.Finalizers, ttFinalizerName) {
+		if helpers.ContainsString(ib.ObjectMeta.Finalizers, ibFinalizerName) {
 			// our finalizer is present, so lets handle any external dependency
-			sdk.API().V1Alpha().DeleteTrafficTarget(ctx, r.Client, logger, tt)
+			sdk.API().V1Alpha().DeleteIdentityBinding(ctx, r.Client, logger, ib)
 
 			// remove our finalizer from the list and update it.
-			tt.ObjectMeta.Finalizers = helpers.RemoveString(tt.ObjectMeta.Finalizers, ttFinalizerName)
-			if err := r.Update(context.Background(), tt); err != nil {
+			ib.ObjectMeta.Finalizers = helpers.RemoveString(ib.ObjectMeta.Finalizers, ibFinalizerName)
+			if err := r.Update(context.Background(), ib); err != nil {
 				return ctrl.Result{}, err
 			}
 		}
@@ -92,11 +92,12 @@ func (r *TrafficTargetReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		return ctrl.Result{}, nil
 	}
 
-	return sdk.API().V1Alpha().UpsertTrafficTarget(ctx, r.Client, logger, tt)
+	return sdk.API().V1Alpha().UpsertIdentityBinding(ctx, r.Client, logger, ib)
 }
 
-func (r *TrafficTargetReconciler) SetupWithManager(mgr ctrl.Manager) error {
+// SetupWithManager sets up the controller with the Manager.
+func (r *IdentityBindingReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&accessv1alpha4.TrafficTarget{}).
+		For(&accessv1alpha4.IdentityBinding{}).
 		Complete(r)
 }

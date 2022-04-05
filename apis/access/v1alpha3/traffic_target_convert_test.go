@@ -1,4 +1,4 @@
-package v1alpha2
+package v1alpha3
 
 import (
 	"testing"
@@ -8,42 +8,42 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func TestConvertToConvertsFromAlpha4ToAlpha2(t *testing.T) {
-	v2Test := &TrafficTarget{}
+func TestConvertToConvertsFromAlpha4ToAlpha3(t *testing.T) {
+	v3Test := &TrafficTarget{}
 
-	err := v2Test.ConvertFrom(v4Access)
+	err := v3Test.ConvertFrom(v4Access)
 	assert.NoError(t, err)
 
-	assert.Equal(t, v4Access.ObjectMeta, v2Test.ObjectMeta)
-	assert.Equal(t, v4Access.TypeMeta.Kind, v2Test.TypeMeta.Kind)
-	assert.Equal(t, GroupVersion.Identifier(), v2Test.TypeMeta.APIVersion)
+	assert.Equal(t, v4Access.ObjectMeta, v3Test.ObjectMeta)
+	assert.Equal(t, v4Access.TypeMeta.Kind, v3Test.TypeMeta.Kind)
+	assert.Equal(t, GroupVersion.Identifier(), v3Test.TypeMeta.APIVersion)
 
 	// test destination
-	assert.Equal(t, v4Access.Spec.Destination.Kind, v2Test.Spec.Destination.Kind)
-	assert.Equal(t, v4Access.Spec.Destination.Name, v2Test.Spec.Destination.Name)
-	assert.Equal(t, v4Access.Spec.Destination.Namespace, v2Test.Spec.Destination.Namespace)
+	assert.Equal(t, v4Access.Spec.Destination.Kind, v3Test.Spec.Destination.Kind)
+	assert.Equal(t, v4Access.Spec.Destination.Name, v3Test.Spec.Destination.Name)
+	assert.Equal(t, v4Access.Spec.Destination.Namespace, v3Test.Spec.Destination.Namespace)
 
 	// test sources
-	assert.Len(t, v2Test.Spec.Sources, len(v4Access.Spec.Sources))
+	assert.Len(t, v3Test.Spec.Sources, len(v4Access.Spec.Sources))
 	for i, s := range v4Access.Spec.Sources {
-		assert.Equal(t, s.Kind, v2Test.Spec.Sources[i].Kind)
-		assert.Equal(t, s.Name, v2Test.Spec.Sources[i].Name)
-		assert.Equal(t, s.Namespace, v2Test.Spec.Sources[i].Namespace)
+		assert.Equal(t, s.Kind, v3Test.Spec.Sources[i].Kind)
+		assert.Equal(t, s.Name, v3Test.Spec.Sources[i].Name)
+		assert.Equal(t, s.Namespace, v3Test.Spec.Sources[i].Namespace)
 	}
 
 	// test rules
-	assert.Len(t, v2Test.Spec.Rules, len(v4Access.Spec.Rules))
+	assert.Len(t, v3Test.Spec.Rules, len(v4Access.Spec.Rules))
 	for i, s := range v4Access.Spec.Rules {
-		assert.Equal(t, s.Kind, v2Test.Spec.Rules[i].Kind)
-		assert.Equal(t, s.Name, v2Test.Spec.Rules[i].Name)
+		assert.Equal(t, s.Kind, v3Test.Spec.Rules[i].Kind)
+		assert.Equal(t, s.Name, v3Test.Spec.Rules[i].Name)
 
 		for n, m := range s.Matches {
-			assert.Equal(t, m, v2Test.Spec.Rules[i].Matches[n])
+			assert.Equal(t, m, v3Test.Spec.Rules[i].Matches[n])
 		}
 	}
 }
 
-func TestConvertToConvertsFromAlpha1ToAlpha2(t *testing.T) {
+func TestConvertToConvertsFromAlpha1ToAlpha3(t *testing.T) {
 	v4Test := &v1alpha4.TrafficTarget{}
 
 	err := v2Access.ConvertTo(v4Test)

@@ -6,6 +6,7 @@ import (
 	accessv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha1"
 	accessv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha2"
 	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
+	accessv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha4"
 )
 
 func setupAccess() error {
@@ -20,6 +21,11 @@ func setupAccess() error {
 	}
 
 	err = accessv1alpha3.AddToScheme(scheme.Scheme)
+	if err != nil {
+		return err
+	}
+
+	err = accessv1alpha4.AddToScheme(scheme.Scheme)
 	if err != nil {
 		return err
 	}
