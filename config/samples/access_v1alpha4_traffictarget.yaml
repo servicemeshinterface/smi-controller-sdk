@@ -1,0 +1,21 @@
+apiVersion: access.smi-spec.io/v1alpha3
+kind: TrafficTarget
+metadata:
+  name: path-specific
+  namespace: default
+spec:
+  destination:
+    kind: ServiceAccount
+    name: service-a
+    namespace: default
+  rules:
+  - kind: TCPRoute
+    name: the-routes
+  - kind: HTTPRouteGroup
+    name: the-routes
+    matches:
+    - metrics
+  sources:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: default

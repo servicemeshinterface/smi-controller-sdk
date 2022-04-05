@@ -3,37 +3,37 @@ package v1alpha1
 import (
 	"testing"
 
-	"github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
+	"github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha4"
 	assert "github.com/stretchr/testify/require"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func TestConvertToConvertsFromAlpha3ToAlpha1(t *testing.T) {
+func TestConvertToConvertsFromAlpha4ToAlpha1(t *testing.T) {
 	v1Test := &TrafficTarget{}
 
-	err := v1Test.ConvertFrom(v3Access)
+	err := v1Test.ConvertFrom(v4Access)
 	assert.NoError(t, err)
 
-	assert.Equal(t, v3Access.ObjectMeta, v1Test.ObjectMeta)
-	assert.Equal(t, v3Access.TypeMeta.Kind, v1Test.TypeMeta.Kind)
+	assert.Equal(t, v4Access.ObjectMeta, v1Test.ObjectMeta)
+	assert.Equal(t, v4Access.TypeMeta.Kind, v1Test.TypeMeta.Kind)
 	assert.Equal(t, GroupVersion.Identifier(), v1Test.TypeMeta.APIVersion)
 
 	// test detination
-	assert.Equal(t, v3Access.Spec.Destination.Kind, v1Test.Destination.Kind)
-	assert.Equal(t, v3Access.Spec.Destination.Name, v1Test.Destination.Name)
-	assert.Equal(t, v3Access.Spec.Destination.Namespace, v1Test.Destination.Namespace)
+	assert.Equal(t, v4Access.Spec.Destination.Kind, v1Test.Destination.Kind)
+	assert.Equal(t, v4Access.Spec.Destination.Name, v1Test.Destination.Name)
+	assert.Equal(t, v4Access.Spec.Destination.Namespace, v1Test.Destination.Namespace)
 
 	// test sources
-	assert.Len(t, v1Test.Sources, len(v3Access.Spec.Sources))
-	for i, s := range v3Access.Spec.Sources {
+	assert.Len(t, v1Test.Sources, len(v4Access.Spec.Sources))
+	for i, s := range v4Access.Spec.Sources {
 		assert.Equal(t, s.Kind, v1Test.Sources[i].Kind)
 		assert.Equal(t, s.Name, v1Test.Sources[i].Name)
 		assert.Equal(t, s.Namespace, v1Test.Sources[i].Namespace)
 	}
 
 	// test rules
-	assert.Len(t, v1Test.Specs, len(v3Access.Spec.Rules))
-	for i, s := range v3Access.Spec.Rules {
+	assert.Len(t, v1Test.Specs, len(v4Access.Spec.Rules))
+	for i, s := range v4Access.Spec.Rules {
 		assert.Equal(t, s.Kind, v1Test.Specs[i].Kind)
 		assert.Equal(t, s.Name, v1Test.Specs[i].Name)
 
@@ -43,78 +43,78 @@ func TestConvertToConvertsFromAlpha3ToAlpha1(t *testing.T) {
 	}
 }
 
-func TestConvertToConvertsFromAlpha1ToAlpha3(t *testing.T) {
-	v3Test := &v1alpha3.TrafficTarget{}
+func TestConvertToConvertsFromAlpha1ToAlpha4(t *testing.T) {
+	v4Test := &v1alpha4.TrafficTarget{}
 
-	err := v1Access.ConvertTo(v3Test)
+	err := v1Access.ConvertTo(v4Test)
 	assert.NoError(t, err)
 
-	assert.Equal(t, v1Access.ObjectMeta, v3Test.ObjectMeta)
-	assert.Equal(t, v1Access.TypeMeta.Kind, v3Test.TypeMeta.Kind)
-	assert.Equal(t, v1alpha3.GroupVersion.Identifier(), v3Test.TypeMeta.APIVersion)
+	assert.Equal(t, v1Access.ObjectMeta, v4Test.ObjectMeta)
+	assert.Equal(t, v1Access.TypeMeta.Kind, v4Test.TypeMeta.Kind)
+	assert.Equal(t, v1alpha4.GroupVersion.Identifier(), v4Test.TypeMeta.APIVersion)
 
 	// test destination
-	assert.Equal(t, v1Access.Destination.Kind, v3Test.Spec.Destination.Kind)
-	assert.Equal(t, v1Access.Destination.Name, v3Test.Spec.Destination.Name)
-	assert.Equal(t, v1Access.Destination.Namespace, v3Test.Spec.Destination.Namespace)
+	assert.Equal(t, v1Access.Destination.Kind, v4Test.Spec.Destination.Kind)
+	assert.Equal(t, v1Access.Destination.Name, v4Test.Spec.Destination.Name)
+	assert.Equal(t, v1Access.Destination.Namespace, v4Test.Spec.Destination.Namespace)
 
 	// test sources
-	assert.Len(t, v3Test.Spec.Sources, len(v1Access.Sources))
+	assert.Len(t, v4Test.Spec.Sources, len(v1Access.Sources))
 	for i, s := range v1Access.Sources {
-		assert.Equal(t, s.Kind, v3Test.Spec.Sources[i].Kind)
-		assert.Equal(t, s.Name, v3Test.Spec.Sources[i].Name)
-		assert.Equal(t, s.Namespace, v3Test.Spec.Sources[i].Namespace)
+		assert.Equal(t, s.Kind, v4Test.Spec.Sources[i].Kind)
+		assert.Equal(t, s.Name, v4Test.Spec.Sources[i].Name)
+		assert.Equal(t, s.Namespace, v4Test.Spec.Sources[i].Namespace)
 	}
 
 	// test rules
-	assert.Len(t, v3Test.Spec.Rules, len(v1Access.Specs))
+	assert.Len(t, v4Test.Spec.Rules, len(v1Access.Specs))
 	for i, s := range v1Access.Specs {
-		assert.Equal(t, s.Kind, v3Test.Spec.Rules[i].Kind)
-		assert.Equal(t, s.Name, v3Test.Spec.Rules[i].Name)
+		assert.Equal(t, s.Kind, v4Test.Spec.Rules[i].Kind)
+		assert.Equal(t, s.Name, v4Test.Spec.Rules[i].Name)
 
 		for n, m := range s.Matches {
-			assert.Equal(t, m, v3Test.Spec.Rules[i].Matches[n])
+			assert.Equal(t, m, v4Test.Spec.Rules[i].Matches[n])
 		}
 	}
 }
 
-var v3Access = &v1alpha3.TrafficTarget{
+var v4Access = &v1alpha4.TrafficTarget{
 	TypeMeta: v1.TypeMeta{
 		Kind:       "TrafficTarget",
-		APIVersion: "v1alpha3",
+		APIVersion: "v1alpha4",
 	},
 	ObjectMeta: v1.ObjectMeta{
-		Name:      "v3Access",
+		Name:      "v4Access",
 		Namespace: "default",
 	},
-	Spec: v1alpha3.TrafficTargetSpec{
-		Destination: v1alpha3.IdentityBindingSubject{
+	Spec: v1alpha4.TrafficTargetSpec{
+		Destination: v1alpha4.IdentityBindingSubject{
 			Kind:      "ServiceAccount",
 			Name:      "myservice",
 			Namespace: "default",
 		},
-		Sources: []v1alpha3.IdentityBindingSubject{
-			v1alpha3.IdentityBindingSubject{
+		Sources: []v1alpha4.IdentityBindingSubject{
+			{
 				Kind:      "ServiceAccount",
 				Name:      "mydestination1",
 				Namespace: "default",
 			},
-			v1alpha3.IdentityBindingSubject{
+			{
 				Kind:      "ServiceAccount",
 				Name:      "mydestination2",
 				Namespace: "default",
 			},
 		},
-		Rules: []v1alpha3.TrafficTargetRule{
-			v1alpha3.TrafficTargetRule{
+		Rules: []v1alpha4.TrafficTargetRule{
+			{
 				Kind:    "HTTPRouteGroup",
 				Name:    "myname1",
-				Matches: []string{"abc", "123"},
+				Matches: []string{"abc", "124"},
 			},
-			v1alpha3.TrafficTargetRule{
+			{
 				Kind:    "HTTPRouteGroup",
 				Name:    "myname2",
-				Matches: []string{"123", "abc"},
+				Matches: []string{"124", "abc"},
 			},
 		},
 	},
@@ -135,27 +135,27 @@ var v1Access = &TrafficTarget{
 		Namespace: "default",
 	},
 	Sources: []IdentityBindingSubject{
-		IdentityBindingSubject{
+		{
 			Kind:      "ServiceAccount",
 			Name:      "mydestination1",
 			Namespace: "default",
 		},
-		IdentityBindingSubject{
+		{
 			Kind:      "ServiceAccount",
 			Name:      "mydestination2",
 			Namespace: "default",
 		},
 	},
 	Specs: []TrafficTargetSpec{
-		TrafficTargetSpec{
+		{
 			Kind:    "HTTPRouteGroup",
 			Name:    "myname1",
-			Matches: []string{"abc", "123"},
+			Matches: []string{"abc", "124"},
 		},
-		TrafficTargetSpec{
+		{
 			Kind:    "HTTPRouteGroup",
 			Name:    "myname2",
-			Matches: []string{"123", "abc"},
+			Matches: []string{"124", "abc"},
 		},
 	},
 }

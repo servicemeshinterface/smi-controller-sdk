@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
-	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
+	accessv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha4"
 	specsv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha4"
 	splitv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -17,10 +17,10 @@ func (l *Logger) UpsertTrafficTarget(
 	ctx context.Context,
 	c client.Client,
 	log logr.Logger,
-	tt *accessv1alpha3.TrafficTarget,
+	tt *accessv1alpha4.TrafficTarget,
 ) (ctrl.Result, error) {
 
-	log.Info("UpsertTrafficTarget called", "api", "v1alpha3", "target", tt)
+	log.Info("UpsertTrafficTarget called", "api", "v1alpha4", "target", tt)
 
 	return ctrl.Result{}, nil
 }
@@ -29,10 +29,10 @@ func (l *Logger) DeleteTrafficTarget(
 	ctx context.Context,
 	c client.Client,
 	log logr.Logger,
-	tt *accessv1alpha3.TrafficTarget,
+	tt *accessv1alpha4.TrafficTarget,
 ) (ctrl.Result, error) {
 
-	log.Info("DeleteTrafficTarget called", "api", "v1alpha3", "target", tt)
+	log.Info("DeleteTrafficTarget called", "api", "v1alpha4", "target", tt)
 
 	return ctrl.Result{}, nil
 }
