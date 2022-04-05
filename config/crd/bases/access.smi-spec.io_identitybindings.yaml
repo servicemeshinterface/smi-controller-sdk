@@ -1,0 +1,85 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+  creationTimestamp: null
+  name: identitybindings.access.smi-spec.io
+spec:
+  group: access.smi-spec.io
+  names:
+    kind: IdentityBinding
+    listKind: IdentityBindingList
+    plural: identitybindings
+    shortNames:
+    - ib
+    singular: identitybinding
+  scope: Namespaced
+  versions:
+  - name: v1alpha4
+    schema:
+      openAPIV3Schema:
+        description: An `IdentityBinding` declares the set of identities belonging
+          to a particular workload for the purposes of policy (i.e. TrafficTarget).
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: IdentityBindingSpec defines the desired state of IdentityBinding
+            properties:
+              schemes:
+                description: IdentityBinding is composed of a set of schemes that
+                  describe a service's identity.
+                minProperties: 1
+                properties:
+                  podLabelSelector:
+                    nullable: true
+                    properties:
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        minProperties: 1
+                        nullable: true
+                        type: object
+                    required:
+                    - matchLabels
+                    type: object
+                  serviceAccount:
+                    nullable: true
+                    type: string
+                  spiffeIdentities:
+                    items:
+                      type: string
+                    minItems: 1
+                    nullable: true
+                    type: array
+                type: object
+            required:
+            - schemes
+            type: object
+          status:
+            description: IdentityBindingStatus defines the observed state of IdentityBinding
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

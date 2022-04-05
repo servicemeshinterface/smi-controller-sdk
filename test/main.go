@@ -29,6 +29,7 @@ import (
 	accessv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha1"
 	accessv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha2"
 	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
+	accessv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha4"
 
 	specsv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha1"
 	specsv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha2"
@@ -137,6 +138,22 @@ func cleanupResources() {
 	}
 
 	ctx := context.Background()
+	kc.DeleteAllOf(
+		ctx,
+		&accessv1alpha4.IdentityBinding{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v4 IdentityBindings", err)
+	}
+
+	kc.DeleteAllOf(
+		ctx,
+		&accessv1alpha4.TrafficTarget{}, client.InNamespace("default"))
+
+	if err != nil {
+		fmt.Println("Error removing v4 TrafficTargets", err)
+	}
+
 	kc.DeleteAllOf(
 		ctx,
 		&accessv1alpha3.TrafficTarget{}, client.InNamespace("default"))
@@ -268,6 +285,16 @@ func cleanupResources() {
 
 func setupMockAPI() {
 	mockAPI = &helpers.MockAPI{}
+	mockAPI.On("UpsertIdenityBinding", mock.Anything,
+		mock.Anything,
+		mock.Anything,
+		mock.Anything).Return(ctrl.Result{}, nil)
+
+	mockAPI.On("DeleteIdenityBinding", mock.Anything,
+		mock.Anything,
+		mock.Anything,
+		mock.Anything).Return(ctrl.Result{}, nil)
+
 	mockAPI.On("UpsertTrafficTarget", mock.Anything,
 		mock.Anything,
 		mock.Anything,

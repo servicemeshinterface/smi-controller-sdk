@@ -17,6 +17,7 @@ import (
 	accessv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha1"
 	accessv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha2"
 	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
+	accessv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha4"
 
 	splitv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha1"
 	splitv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha2"
@@ -68,6 +69,7 @@ func init() {
 	_ = accessv1alpha1.AddToScheme(scheme)
 	_ = accessv1alpha2.AddToScheme(scheme)
 	_ = accessv1alpha3.AddToScheme(scheme)
+	_ = accessv1alpha4.AddToScheme(scheme)
 
 	_ = splitv1alpha1.AddToScheme(scheme)
 	_ = splitv1alpha2.AddToScheme(scheme)
@@ -131,6 +133,14 @@ func Start(config Config) {
 		os.Exit(1)
 	}
 
+	if err = (&accesscontrollers.IdentityBindingReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "IdentityBinding")
+		os.Exit(1)
+	}
+
 	// Traffic Split Controllers
 	if err = (&splitcontrollers.TrafficSplitReconciler{
 		Client: mgr.GetClient(),
@@ -172,7 +182,11 @@ func Start(config Config) {
 			os.Exit(1)
 		}
 		if err = (&accessv1alpha2.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha1.TrafficTarget")
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha2.TrafficTarget")
+			os.Exit(1)
+		}
+		if err = (&accessv1alpha3.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha3.TrafficTarget")
 			os.Exit(1)
 		}
 

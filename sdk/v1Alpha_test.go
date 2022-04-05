@@ -12,6 +12,8 @@ func setupSDKTests(t *testing.T) (*V1AlphaMock, *api, logr.Logger) {
 	v1 := &V1AlphaMock{}
 	v1.On("UpsertTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 	v1.On("DeleteTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
+	v1.On("UpsertIdentityBinding", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
+	v1.On("DeleteIdentityBinding", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 	v1.On("UpsertTrafficSplit", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 	v1.On("DeleteTrafficSplit", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 	v1.On("UpsertHTTPRouteGroup", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
@@ -24,7 +26,7 @@ func setupSDKTests(t *testing.T) (*V1AlphaMock, *api, logr.Logger) {
 	a := &api{&v1AlphaImpl{}}
 	a.RegisterV1Alpha(v1)
 
-	l := ctrl.Log.WithName("controllers").WithName("TrafficTarget")
+	l := ctrl.Log.WithName("controllers").WithName("V1AlphaMock")
 
 	return v1, a, l
 }

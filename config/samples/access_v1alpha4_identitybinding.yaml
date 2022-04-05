@@ -1,0 +1,10 @@
+apiVersion: access.smi-spec.io/v1alpha4
+kind: IdentityBinding
+metadata:
+  name: service-a
+spec:
+  schemes:
+   spiffeIdentities:
+     - "cluster.local/ns/default/sa/service-a"
+     - "federated.trustdomain/boundary/boundaryName/identifierType/identifier"
+   serviceAccount: service-a

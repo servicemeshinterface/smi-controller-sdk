@@ -9,7 +9,10 @@ require (
 	github.com/hashicorp/go-hclog v0.16.1
 	github.com/jinzhu/copier v0.3.2
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e
+	github.com/onsi/ginkgo v1.14.1
+	github.com/onsi/gomega v1.10.2
 	github.com/shipyard-run/shipyard v0.3.12
+	github.com/spiffe/go-spiffe/v2 v2.0.0
 	github.com/stretchr/testify v1.7.0
 	k8s.io/api v0.19.3
 	k8s.io/apimachinery v0.19.3
