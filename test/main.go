@@ -285,12 +285,12 @@ func cleanupResources() {
 
 func setupMockAPI() {
 	mockAPI = &helpers.MockAPI{}
-	mockAPI.On("UpsertIdenityBinding", mock.Anything,
+	mockAPI.On("UpsertIdentityBinding", mock.Anything,
 		mock.Anything,
 		mock.Anything,
 		mock.Anything).Return(ctrl.Result{}, nil)
 
-	mockAPI.On("DeleteIdenityBinding", mock.Anything,
+	mockAPI.On("DeleteIdentityBinding", mock.Anything,
 		mock.Anything,
 		mock.Anything,
 		mock.Anything).Return(ctrl.Result{}, nil)
