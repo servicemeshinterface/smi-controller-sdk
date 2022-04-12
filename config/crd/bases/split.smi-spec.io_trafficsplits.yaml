@@ -90,6 +90,7 @@ spec:
                     service:
                       type: string
                     weight:
+                      minimum: 0
                       type: integer
                   required:
                   - service
@@ -138,6 +139,7 @@ spec:
                       type: string
                     weight:
                       description: Weight defines the traffic split percentage
+                      minimum: 0
                       type: integer
                   required:
                   - service
@@ -215,6 +217,7 @@ spec:
                       type: string
                     weight:
                       description: Weight defines the traffic split percentage
+                      minimum: 0
                       type: integer
                   required:
                   - service
