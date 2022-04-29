@@ -34,6 +34,7 @@ import (
 	accessv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha1"
 	accessv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha2"
 	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
+	accessv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha4"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -53,6 +54,8 @@ func TestAPIs(t *testing.T) {
 	// execute tests
 	t.Run("Create TrafficTarget", testCreateTrafficTarget)
 	t.Run("Delete TrafficTarget", testDeleteTrafficTarget)
+	t.Run("Create IdentityBinding", testCreateIdentityBinding)
+	t.Run("Delete IdentityBinding", testDeleteIdentityBinding)
 }
 
 func setupSuite(t *testing.T) {
@@ -76,6 +79,9 @@ func setupSuite(t *testing.T) {
 	err = accessv1alpha3.AddToScheme(scheme.Scheme)
 	require.NoError(t, err)
 
+	err = accessv1alpha4.AddToScheme(scheme.Scheme)
+	require.NoError(t, err)
+
 	// +kubebuilder:scaffold:scheme
 
 	k8sManager, err := ctrl.NewManager(cfg, ctrl.Options{
@@ -84,6 +90,11 @@ func setupSuite(t *testing.T) {
 	require.NoError(t, err)
 
 	err = (&TrafficTargetReconciler{
+		Client: k8sManager.GetClient(),
+	}).SetupWithManager(k8sManager)
+	require.NoError(t, err)
+
+	err = (&IdentityBindingReconciler{
 		Client: k8sManager.GetClient(),
 	}).SetupWithManager(k8sManager)
 	require.NoError(t, err)
@@ -103,4 +114,6 @@ func setupSuite(t *testing.T) {
 
 	mockAPI.On("UpsertTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
 	mockAPI.On("DeleteTrafficTarget", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
+	mockAPI.On("UpsertIdentityBinding", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
+	mockAPI.On("DeleteIdentityBinding", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(ctrl.Result{}, nil)
 }

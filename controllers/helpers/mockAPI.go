@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-logr/logr"
-	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
+	accessv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha4"
 	specsv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha4"
 	splitv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4"
 	"github.com/stretchr/testify/mock"
@@ -20,7 +20,7 @@ func (ms *MockAPI) UpsertTrafficTarget(
 	ctx context.Context,
 	c client.Client,
 	log logr.Logger,
-	tt *accessv1alpha3.TrafficTarget,
+	tt *accessv1alpha4.TrafficTarget,
 ) (ctrl.Result, error) {
 
 	args := ms.Called(ctx, c, log, tt)
@@ -34,12 +34,40 @@ func (ms *MockAPI) DeleteTrafficTarget(
 	ctx context.Context,
 	c client.Client,
 	log logr.Logger,
-	tt *accessv1alpha3.TrafficTarget,
+	tt *accessv1alpha4.TrafficTarget,
 ) (ctrl.Result, error) {
 
 	args := ms.Called(ctx, c, log, tt)
 
 	log.Info("Delete TrafficTarget called")
+
+	return args.Get(0).(ctrl.Result), args.Error(1)
+}
+
+func (ms *MockAPI) UpsertIdentityBinding(
+	ctx context.Context,
+	c client.Client,
+	log logr.Logger,
+	ib *accessv1alpha4.IdentityBinding,
+) (ctrl.Result, error) {
+
+	args := ms.Called(ctx, c, log, ib)
+
+	log.Info("Upsert IdentityBinding called")
+
+	return args.Get(0).(ctrl.Result), args.Error(1)
+}
+
+func (ms *MockAPI) DeleteIdentityBinding(
+	ctx context.Context,
+	c client.Client,
+	log logr.Logger,
+	ib *accessv1alpha4.IdentityBinding,
+) (ctrl.Result, error) {
+
+	args := ms.Called(ctx, c, log, ib)
+
+	log.Info("Delete IdentityBinding called")
 
 	return args.Get(0).(ctrl.Result), args.Error(1)
 }

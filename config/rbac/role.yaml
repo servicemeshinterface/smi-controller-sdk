@@ -9,6 +9,32 @@ rules:
 - apiGroups:
   - access.smi-spec.io
   resources:
+  - identitybindings
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - access.smi-spec.io
+  resources:
+  - identitybindings/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - access.smi-spec.io
+  resources:
+  - identitybindings/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - access.smi-spec.io
+  resources:
   - traffictargets
   verbs:
   - create
